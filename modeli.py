@@ -1,4 +1,4 @@
-from baza import ustvari_povezavo
+from dostop import ustvari_povezavo
 import psycopg2.extras
 
 def prijava(uporabnisko_ime):

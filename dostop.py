@@ -3,8 +3,8 @@ import psycopg2.extras
 
 db = 'sem2024_mateov'
 host = 'baza.fmf.uni-lj.si'
-user = 'javnost'
-password = 'javnogeslo'
+user = 'mateov'
+password = 'Grievous1'
 
 def ustvari_povezavo():
     conn = psycopg2.connect(
