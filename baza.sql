@@ -1,5 +1,5 @@
 CREATE TABLE Avto (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     znamka VARCHAR(50) NOT NULL,
     model VARCHAR(50) NOT NULL,
     moc INTEGER,
@@ -7,14 +7,14 @@ CREATE TABLE Avto (
 );
 
 CREATE TABLE Dirkalisce (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     ime_dirkalisca VARCHAR(100),
     mesto VARCHAR(50),
     drzava VARCHAR(50)
 );
 
 CREATE TABLE Uporabnik (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     uporabnisko_ime VARCHAR(50) UNIQUE NOT NULL,
     ime VARCHAR(50) NOT NULL,
     priimek VARCHAR(50) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE Uporabnik (
 );
 
 CREATE TABLE Dirka (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     datum DATE NOT NULL,
     vreme VARCHAR(50),
     id_dirkalisca INTEGER, --tuji ključ za dirkališče
