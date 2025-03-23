@@ -19,3 +19,29 @@ INSERT INTO Avto (id, znamka, model, moc, max_hitrost) VALUES
 (18, 'McLaren', '720S', 720 , 341),
 (19, 'Pagani', 'Zonda Cinque', 678 , 350),
 (20, 'Koenigsegg', 'Agera RS', 1160 , 447);
+
+INSERT INTO dirkalisce (id, ime_dirkalisca, mesto, drzava) VALUES
+(1, 'Grand Prix Pariza', 'Pariz', 'Francija'),
+(2, 'Tokyo Night Sprint', 'Tokyo', 'Japonska'),
+(3, 'Barcelona Street Challenge', 'Barcelona', 'Španija'),
+(4, 'Ljubljana City Circuit', 'Ljubljana', 'Slovenija'),
+(5, 'New York Skyline Race', 'New York', 'ZDA'),
+(6, 'London River Run', 'London', 'Velika Britanija'),
+(7, 'Sydney Harbour Dash', 'Sydney', 'Avstralija'),
+(8, 'Berlin Wall GP', 'Berlin', 'Nemčija'),
+(9, 'Rome Colosseum Circuit', 'Rim', 'Italija'),
+(10, 'Moscow Midnight Run', 'Moskva', 'Rusija'),
+(11, 'Dubai Desert Drift', 'Dubaj', 'Združeni arabski emirati'),
+(12, 'Cape Town Coastal Cruise', 'Cape Town', 'Južnoafriška republika'),
+(13, 'Toronto Downtown Dash', 'Toronto', 'Kanada'),
+(14, 'Rio Carnival Circuit', 'Rio de Janeiro', 'Brazilija'),
+(15, 'Shanghai Skyline Sprint', 'Šanghaj', 'Kitajska'),
+(16, 'Seoul Speed Challenge', 'Seul', 'Južna Koreja'),
+(17, 'Istanbul Bridge Battle', 'Istanbul', 'Turčija'),
+(18, 'Athens Acropolis Rally', 'Atene', 'Grčija'),
+(19, 'Helsinki Midnight Circuit', 'Helsinki', 'Finska'),
+(20, 'Vienna Ringstrasse GP', 'Dunaj', 'Avstrija');
+
+
+
+
