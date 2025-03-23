@@ -74,7 +74,7 @@ INSERT INTO dirka (id, datum, vreme, id_dirkalisca) VALUES
 (29, '2026-09-27', 'oblačno', 11),
 (30, '2026-10-20', 'močen dež', 10);
 
-select * from dirka
+select * from uporabnik
 
 ALTER TABLE Dirka
 ADD COLUMN ime_dirkalisca VARCHAR(100);
@@ -82,4 +82,7 @@ UPDATE Dirka d
 SET ime_dirkalisca = dl.ime_dirkalisca
 FROM Dirkalisce dl
 WHERE d.id_dirkalisca = dl.id;
+
+INSERT INTO uporabnik (id, uporabnisko_ime, ime, priimek, tocke, id_avto) VALUES
+(1, 'goat', 'Fernando', 'Alonso', 10, 1);
 
