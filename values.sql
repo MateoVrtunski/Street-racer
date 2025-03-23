@@ -42,6 +42,44 @@ INSERT INTO dirkalisce (id, ime_dirkalisca, mesto, drzava) VALUES
 (19, 'Helsinki Midnight Circuit', 'Helsinki', 'Finska'),
 (20, 'Vienna Ringstrasse GP', 'Dunaj', 'Avstrija');
 
+INSERT INTO dirka (id, datum, vreme, id_dirkalisca) VALUES
+(1, '2025-03-15', 'jasno', 1),
+(2, '2025-04-10', 'oblačno', 2),
+(3, '2025-05-05', 'jasno', 3),
+(4, '2025-06-20', 'jasno', 4),
+(5, '2025-07-12', 'jasno', 5),
+(6, '2025-08-25', 'šibek dež', 6),
+(7, '2025-09-14', 'jasno', 7),
+(8, '2025-10-03', 'oblačno', 8),
+(9, '2025-11-09', 'močen dež', 9),
+(10, '2025-12-01', 'sneg', 10),
+(11, '2025-03-28', 'jasno', 11),
+(12, '2025-04-18', 'jasno', 12),
+(13, '2025-05-22', 'oblačno', 13),
+(14, '2025-06-05', 'jasno', 14),
+(15, '2025-07-30', 'jasno', 15),
+(16, '2025-08-16', 'šibek dež', 16),
+(17, '2025-09-21', 'jasno', 17),
+(18, '2025-10-12', 'močen dež', 18),
+(19, '2025-11-07', 'oblačno', 19),
+(20, '2025-12-15', 'sneg', 20),
+(21, '2026-01-10', 'sneg', 19),
+(22, '2026-02-14', 'oblačno', 18),
+(23, '2026-03-08', 'jasno', 17),
+(24, '2026-04-03', 'jasno', 16),
+(25, '2026-05-19', 'jasno', 15),
+(26, '2026-06-25', 'jasno', 14),
+(27, '2026-07-14', 'jasno', 13),
+(28, '2026-08-09', 'šibek dež', 12),
+(29, '2026-09-27', 'oblačno', 11),
+(30, '2026-10-20', 'močen dež', 10);
 
+select * from dirka
 
+ALTER TABLE Dirka
+ADD COLUMN ime_dirkalisca VARCHAR(100);
+UPDATE Dirka d
+SET ime_dirkalisca = dl.ime_dirkalisca
+FROM Dirkalisce dl
+WHERE d.id_dirkalisca = dl.id;
 
