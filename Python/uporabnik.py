@@ -6,16 +6,23 @@ user = 'javnost'
 password = 'javnogeslo'
 
 def prijava_uporabnika(cur):
-    uporabnik = input("Vnesi svoje uporabniško ime: ").strip()
-    
-    cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
+    print("\n🔐 Prijava:")
+
+    uporabnisko_ime = input("Vnesi svoje uporabniško ime: ").strip()
+    geslo = input("Vnesi svoje geslo: ").strip()
+
+    cur.execute("""
+        SELECT * FROM Uporabnik
+        WHERE uporabnisko_ime = %s AND geslo = %s
+    """, (uporabnisko_ime, geslo))
+
     rezultat = cur.fetchone()
 
     if rezultat:
         print(f"\n✅ Prijavljen si kot: {rezultat[2]} {rezultat[3]} (Uporabniško ime: {rezultat[1]})\n")
-        return uporabnik
+        return uporabnisko_ime
     else:
-        print("\n⚠️ Uporabniško ime ne obstaja. Prosim registriraj se najprej!\n")
+        print("\n⚠️ Napačno uporabniško ime ali geslo. Poskusi znova!\n")
         return None
     
 def prikazi_dirke(cur):
@@ -34,59 +41,59 @@ def prikazi_dirke(cur):
     return dirke
 
 def registracija_uporabnika(cur):
-    print("\n🔧 Registracija novega uporabnika:")
-    
+    print("\n📝 Registracija novega uporabnika:")
+
     ime = input("Vnesi svoje ime: ").strip()
     priimek = input("Vnesi svoj priimek: ").strip()
-    
+
+    # Preverimo edinstvenost uporabniškega imena
     while True:
         uporabnisko_ime = input("Izberi uporabniško ime: ").strip()
-        
-        # Preveri, če uporabniško ime že obstaja
-        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
+        cur.execute("SELECT 1 FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
         if cur.fetchone():
-            print("⚠️ To uporabniško ime že obstaja. Izberi drugo.")
+            print("⚠️ Uporabniško ime je že zasedeno, prosim izberi drugo.")
         else:
             break
 
-    # Prikaži seznam avtov
-    cur.execute("SELECT id, znamka, model FROM Avto ORDER BY id")
-    avti = cur.fetchall()
+    geslo = input("Izberi geslo: ").strip()
 
-    print("\n🚗 Seznam razpoložljivih avtov:")
+    # Prikažemo vse avte
+    cur.execute("SELECT id, znamka, model, moc, max_hitrost FROM Avto ORDER BY id")
+    avti = cur.fetchall()
+    if not avti:
+        print("⚠️ Ni razpoložljivih avtov! Najprej jih dodaj v bazo.")
+        return
+
+    print("\nRazpoložljivi avti:")
     for avto in avti:
-        print(f"ID: {avto[0]} ➡️ {avto[1]} {avto[2]}")
+        print(f"{avto[0]}: {avto[1]} {avto[2]} (Moč: {avto[3]} KM, Max hitrost: {avto[4]} km/h)")
 
     while True:
         try:
-            izbran_avto_id = int(input("\nVnesi ID avta, ki ga želiš izbrati: ").strip())
-            
-            # Preveri, če avto obstaja
-            cur.execute("SELECT * FROM Avto WHERE id = %s", (izbran_avto_id,))
-            avto = cur.fetchone()
-            
-            if avto:
-                print(f"\n✅ Izbral si {avto[1]} {avto[2]}.")
+            id_avto = int(input("Izberi ID avta: "))
+            cur.execute("SELECT znamka, model FROM Avto WHERE id = %s", (id_avto,))
+            avto_podatki = cur.fetchone()
+
+            if avto_podatki:
+                ime_avta = f"{avto_podatki[0]} {avto_podatki[1]}"
                 break
             else:
-                print("⚠️ Avto z izbranim ID-jem ne obstaja. Poskusi znova.")
+                print("⚠️ Napačen ID avta. Poskusi znova.")
         except ValueError:
-            print("⚠️ Prosim, vnesi številko ID-ja.")
+            print("⚠️ Vpiši številko za ID avta.")
 
-    # Poišči največji obstoječi ID uporabnika in povečaj za 1
-    cur.execute("SELECT MAX(id) FROM Uporabnik")
-    zadnji_id = cur.fetchone()[0]
-    nov_id = (zadnji_id or 0) + 1
+    # Določimo naslednji ID uporabnika
+    cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
+    nov_id = cur.fetchone()[0]
 
-    # Vstavi novega uporabnika v bazo
+    # Vnos v bazo
     cur.execute("""
-        INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, tocke, id_avto)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (nov_id, uporabnisko_ime, ime, priimek, 0, izbran_avto_id))
+        INSERT INTO Uporabnik (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto, model_avta)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """, (nov_id, uporabnisko_ime, geslo, ime, priimek, 0, id_avto, ime_avta))
 
-    print(f"\n🎉 Uporabnik {ime} {priimek} uspešno registriran z uporabniškim imenom '{uporabnisko_ime}' in ID-jem {nov_id}!\n")
+    print(f"✅ Uporabnik '{uporabnisko_ime}' uspešno registriran!\n")
 
-    return uporabnisko_ime  # Lahko vrneš, da ga avtomatsko prijaviš naprej
 
 def izberi_dirko(cur, uporabnik):
     dirke = prikazi_dirke(cur)
