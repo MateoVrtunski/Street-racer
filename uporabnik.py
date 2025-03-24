@@ -33,6 +33,61 @@ def prikazi_dirke(cur):
     
     return dirke
 
+def registracija_uporabnika(cur):
+    print("\n🔧 Registracija novega uporabnika:")
+    
+    ime = input("Vnesi svoje ime: ").strip()
+    priimek = input("Vnesi svoj priimek: ").strip()
+    
+    while True:
+        uporabnisko_ime = input("Izberi uporabniško ime: ").strip()
+        
+        # Preveri, če uporabniško ime že obstaja
+        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
+        if cur.fetchone():
+            print("⚠️ To uporabniško ime že obstaja. Izberi drugo.")
+        else:
+            break
+
+    # Prikaži seznam avtov
+    cur.execute("SELECT id, znamka, model FROM Avto ORDER BY id")
+    avti = cur.fetchall()
+
+    print("\n🚗 Seznam razpoložljivih avtov:")
+    for avto in avti:
+        print(f"ID: {avto[0]} ➡️ {avto[1]} {avto[2]}")
+
+    while True:
+        try:
+            izbran_avto_id = int(input("\nVnesi ID avta, ki ga želiš izbrati: ").strip())
+            
+            # Preveri, če avto obstaja
+            cur.execute("SELECT * FROM Avto WHERE id = %s", (izbran_avto_id,))
+            avto = cur.fetchone()
+            
+            if avto:
+                print(f"\n✅ Izbral si {avto[1]} {avto[2]}.")
+                break
+            else:
+                print("⚠️ Avto z izbranim ID-jem ne obstaja. Poskusi znova.")
+        except ValueError:
+            print("⚠️ Prosim, vnesi številko ID-ja.")
+
+    # Poišči največji obstoječi ID uporabnika in povečaj za 1
+    cur.execute("SELECT MAX(id) FROM Uporabnik")
+    zadnji_id = cur.fetchone()[0]
+    nov_id = (zadnji_id or 0) + 1
+
+    # Vstavi novega uporabnika v bazo
+    cur.execute("""
+        INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, tocke, id_avto)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (nov_id, uporabnisko_ime, ime, priimek, 0, izbran_avto_id))
+
+    print(f"\n🎉 Uporabnik {ime} {priimek} uspešno registriran z uporabniškim imenom '{uporabnisko_ime}' in ID-jem {nov_id}!\n")
+
+    return uporabnisko_ime  # Lahko vrneš, da ga avtomatsko prijaviš naprej
+
 def izberi_dirko(cur, uporabnik):
     dirke = prikazi_dirke(cur)
     
@@ -60,18 +115,44 @@ def glavna():
     conn, cur = ustvari_povezavo()
 
     try:
-        uporabnik = prijava_uporabnika(cur)
+        uporabnik = None  # Najprej ni noben prijavljen
 
-        if uporabnik:
-            prijava_uspesna = izberi_dirko(cur, uporabnik)
+        # Ta while loop bo tekla, dokler ne bo veljavna izbira
+        while uporabnik is None:
+            print("\n👋 Dobrodošel!")
+            print("1️⃣ Prijava")
+            print("2️⃣ Registracija")
+            izbira = input("Izberi (1 ali 2): ").strip()
 
-            if prijava_uspesna:
-                conn.commit()
-                print("\n✅ Vse spremembe so shranjene!")
+            if izbira == '1':
+                uporabnik = prijava_uporabnika(cur)
+                if uporabnik:
+                    prijava_uspesna = izberi_dirko(cur, uporabnik)
+
+                    if prijava_uspesna:
+                        conn.commit()
+                        print("\n✅ Vse spremembe so shranjene!")
+                    else:
+                        print("\n⚠️ Ni prijave na dirko.")
+                else:
+                    print("\n⚠️ Prijava neuspešna.")
+                    # uporabnik ostane None, zato se loop nadaljuje
+
+            elif izbira == '2':
+                uporabnik = registracija_uporabnika(cur)
+                conn.commit()  # Shranimo registracijo
+                print("\n✅ Registracija uspešna!")
+
+                prijava_uspesna = izberi_dirko(cur, uporabnik)
+
+                if prijava_uspesna:
+                    conn.commit()
+                    print("\n✅ Vse spremembe so shranjene!")
+                else:
+                    print("\n⚠️ Ni prijave na dirko.")
             else:
-                print("\n⚠️ Ni prijave na dirko.")
-        else:
-            print("\n⚠️ Prijava neuspešna.")
+                print("\n⚠️ Napačna izbira! Prosim vnesi 1 za prijavo ali 2 za registracijo.\n")
+
     except Exception as e:
         print("❌ Napaka:", e)
         conn.rollback()
