@@ -68,6 +68,7 @@ def prikazi_meni():
     print("1️⃣ Prijava")
     print("2️⃣ Registracija")
 
+
 def prikazi_meni_uporabnika():
     print("\n📌 MOŽNOSTI:")
     print("1️⃣ Prijava na dirko")

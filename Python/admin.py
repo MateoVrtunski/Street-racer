@@ -35,9 +35,9 @@ def dodaj_admina(cur, conn):
         print("⚠️ Ta uporabnik je že admin.")
     else:
         cur.execute(
-            "INSERT INTO Boss (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto, model_avta) "
+            "INSERT INTO Boss (id, uporabnisko_ime, geslo, ime, priimek) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (nov_id, uporabnik[1], uporabnik[2], uporabnik[3], uporabnik[4], uporabnik[5], uporabnik[6], uporabnik[7])
+            (nov_id, uporabnik[1], uporabnik[2], uporabnik[3], uporabnik[4])
         )
         conn.commit()
         print(f"✅ Uporabnik {uporabnisko_ime} je zdaj admin!")
@@ -93,22 +93,16 @@ def doloci_rezultate(cur, conn):
 
 
 def prikazi_profil_admin(cur, conn, admin):
-    cur.execute("SELECT ime, priimek, tocke, id_avto FROM Boss WHERE uporabnisko_ime = %s", (admin,))
+    cur.execute("SELECT ime, priimek FROM Boss WHERE uporabnisko_ime = %s", (admin,))
     rezultat = cur.fetchone()
     if rezultat:
-        ime, priimek, tocke, id_avto = rezultat
-        cur.execute("SELECT znamka, model FROM Avto WHERE id = %s", (id_avto,))
-        avto_podatki = cur.fetchone()
-        avto_ime = f"{avto_podatki[0]} {avto_podatki[1]}" if avto_podatki else "Ni izbran"
+        ime, priimek = rezultat
 
         print(f"\n👤 Profil: {ime} {priimek}")
-        print(f"🚗 Avto: {avto_ime}")
-        print(f"🏆 Točke: {tocke}")
-
+        
         print("\n📌 Uredi profil:")
         print("1️⃣ Spremeni geslo")
-        print("2️⃣ Zamenjaj avto")
-        print("3️⃣ Nazaj")
+        print("2️⃣ Nazaj")
 
         izbira = input("\n🔢 Izberi možnost: ").strip()
 
@@ -118,24 +112,6 @@ def prikazi_profil_admin(cur, conn, admin):
             conn.commit()
             print("\n✅ Geslo uspešno spremenjeno!")
 
-        elif izbira == "2":
-            cur.execute("SELECT id, znamka, model FROM Avto")
-            avtomobili = cur.fetchall()
-
-            print("\n🚗 Izberi nov avto:")
-            for avto in avtomobili:
-                print(f"{avto[0]}. {avto[1]} {avto[2]}")
-
-            while True:
-                nov_avto_id = input("\n🔢 Vnesi ID novega avta: ").strip()
-                cur.execute("SELECT * FROM Avto WHERE id = %s", (nov_avto_id,))
-                if cur.fetchone():
-                    cur.execute("UPDATE Boss SET id_avto = %s WHERE uporabnisko_ime = %s", (nov_avto_id, admin))
-                    conn.commit()
-                    print("\n✅ Avto uspešno posodobljen!")
-                    break
-                else:
-                    print("⚠️ Neveljaven ID avta. Poskusi znova.")
 
 def admin_menu(cur, conn):
     admin = prijava_admin(cur)
@@ -144,7 +120,7 @@ def admin_menu(cur, conn):
 
     while True:
         print("\n--- ADMIN MENU ---")
-        print("1️⃣ Spremeni profil")
+        print("1️⃣ Profil")
         print("2️⃣ Dodaj novega admina")
         print("3️⃣ Preglej trenutno dirko")
         print("4️⃣ Določi rezultate dirke")

@@ -78,5 +78,12 @@ INSERT INTO uporabnik (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto,
 (11, 'mateo', 'geslo123', 'Mateo', 'Vrtunski', 100, 1, 'DBS Superleggera'),
 (22, 'tian','geslo123', 'Tian', 'Lipovšek', 100, 3, 'M5 Competition');
 
-select * from dirkalisce;
+INSERT INTO boss (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto, model_avta) VALUES
+(1, 'mateo', 'geslo123', 'Mateo', 'Vrtunski', 100, 1, 'DBS Superleggera'),
+(2, 'tian','geslo123', 'Tian', 'Lipovšek', 100, 3, 'M5 Competition');
+
+select * from boss;
+ALTER TABLE boss DROP COLUMN tocke;
+ALTER TABLE boss DROP COLUMN id_avto;
+ALTER TABLE boss DROP COLUMN model_avta;
 
