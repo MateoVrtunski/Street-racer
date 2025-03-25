@@ -75,5 +75,8 @@ INSERT INTO dirka (id, datum, vreme, id_dirkalisca) VALUES
 (30, '2026-10-20', 'močen dež', 10);
 
 INSERT INTO uporabnik (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto, model_avta) VALUES
-(1, 'goat', 'Fernando', 'Alonso', 10, 1, 'DBS Superleggera');
+(11, 'mateo', 'geslo123', 'Mateo', 'Vrtunski', 100, 1, 'DBS Superleggera'),
+(22, 'tian','geslo123', 'Tian', 'Lipovšek', 100, 3, 'M5 Competition');
+
+select * from dirkalisce;
 

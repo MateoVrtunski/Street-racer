@@ -48,3 +48,29 @@ UPDATE Dirka d
 SET ime_dirkalisca = dl.ime_dirkalisca
 FROM Dirkalisce dl
 WHERE d.id_dirkalisca = dl.id;
+
+CREATE TABLE TrenutnaDirka (
+    id_dirke INTEGER,
+    uporabnisko_ime VARCHAR(50) NOT NULL,
+    id_avto INTEGER NOT NULL,
+	model_avta VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id_dirke, uporabnisko_ime), 
+    FOREIGN KEY (id_dirke) REFERENCES Dirka(id) ON DELETE SET NULL, 
+    FOREIGN KEY (uporabnisko_ime) REFERENCES Uporabnik(uporabnisko_ime) ON DELETE SET NULL,
+	FOREIGN KEY (id_avto) REFERENCES Avto(id) ON DELETE SET NULL
+);
+
+CREATE TABLE boss (
+    id INTEGER PRIMARY KEY,
+    uporabnisko_ime VARCHAR(50) UNIQUE NOT NULL,
+    geslo VARCHAR(255) NOT NULL,
+    ime VARCHAR(50) NOT NULL,
+    priimek VARCHAR(50) NOT NULL,
+    tocke INTEGER DEFAULT 0,
+    id_avto INTEGER, 
+    model_avta VARCHAR(100),
+    FOREIGN KEY (id_avto) REFERENCES Avto(id) ON DELETE SET NULL
+);
+
+	
+	
