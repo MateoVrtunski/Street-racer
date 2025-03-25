@@ -53,13 +53,10 @@ def prikazi_trenutno_dirko(cur):
     """)
     dirke = cur.fetchall()
 
-    if not dirka:
-        print("\n⚠️ Trenutno ni prijavljenih uporabnikov.")
-        return None
-
     print("\n🏁 Trenutne dirke:")
     for dirka in dirke:
-        print(f"📅 ID: {dirka[0]}, Datum: {dirka[1]}, Lokacija: {dirka[2]}, Prijavljeni: {dirka[3]}/20")
+        if dirka[3] >= 10:
+            print(f"📅 ID: {dirka[0]}, Datum: {dirka[1]}, Dirka: {dirka[2]}, Prijavljeni: {dirka[3]}/20")
 
     return dirke
 
@@ -101,17 +98,24 @@ def doloci_rezultate(cur, conn):
     rezultati = []
     tocke_f1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] + [0] * (len(prijavljeni) - 10)
 
-    print("\n🏆 Vpiši rezultate (od 1. mesta naprej):")
-    for mesto, uporabnik in enumerate(prijavljeni, start=1):
-        print(f"{mesto}. {uporabnik}")
-        rezultati.append((id_dirke, uporabnik, mesto, tocke_f1[mesto - 1]))
+    print('Tekmovali so:')
+    for uporabnik in enumerate(prijavljeni, start=1):
+        print(f"{uporabnik}")
 
-    # Shrani rezultate v bazo
-    for rezultat in rezultati:
+    print("\n🏆 Vpiši rezultate (od 1. mesta naprej):")
+
+    for i in range(len(dirke)):
+        uporabnik = input(f"Vnesi uporabnika, ki je {i+1}. mesto: ").strip()
+        rezultati.append(uporabnik)
+
+    for i, uporabnik in enumerate(rezultati):
+        tocke = tocke_f1[i] if i < 10 else 0
+
+        # Vstavi rezultat v tabelo
         cur.execute("""
-            INSERT INTO RezultatDirke (id_dirke, uporabnisko_ime, uvrstitev, tocke) 
+            INSERT INTO RezultatDirke (id_dirke, uporabnisko_ime, uvrstitev, tocke)
             VALUES (%s, %s, %s, %s)
-        """, rezultat)
+        """, (dirke[0][0], uporabnik, i+1, tocke))
         
         # Posodobi točke uporabnika
         cur.execute("""
