@@ -44,52 +44,84 @@ def dodaj_admina(cur, conn):
 
 
 def prikazi_trenutno_dirko(cur):
-    print("\n🏁 Prijavljeni na trenutno dirko:")
     cur.execute("""
-        SELECT id_dirke, uporabnisko_ime, model_avta FROM TrenutnaDirka ORDER BY id_dirke
+        SELECT d.id, d.datum, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) 
+        FROM Dirka d
+        LEFT JOIN TrenutnaDirka td ON d.id = td.id_dirke
+        GROUP BY d.id, d.datum, d.ime_dirkalisca
+        ORDER BY d.id
     """)
-    dirka = cur.fetchall()
+    dirke = cur.fetchall()
 
     if not dirka:
         print("\n⚠️ Trenutno ni prijavljenih uporabnikov.")
         return None
 
-    for idx, (id_dirke, uporabnisko_ime, model_avta) in enumerate(dirka, start=1):
-        print(f"{idx}. {uporabnisko_ime} - {model_avta} (Dirka ID: {id_dirke})")
+    print("\n🏁 Trenutne dirke:")
+    for dirka in dirke:
+        print(f"📅 ID: {dirka[0]}, Datum: {dirka[1]}, Lokacija: {dirka[2]}, Prijavljeni: {dirka[3]}/20")
 
-    return dirka
+    return dirke
+
 
 def doloci_rezultate(cur, conn):
-    dirka = prikazi_trenutno_dirko(cur)
-    if not dirka:
+    # Prikaži vse dirke, da admin izbere eno
+    dirke = prikazi_trenutno_dirko(cur)
+
+    if not dirke:
+        print("⚠️ Ni aktivnih dirk za določanje rezultatov.")
         return
 
-    # F1 točkovanje
-    tocke_f1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
+    # Izberi ID dirke
+    while True:
+        try:
+            id_dirke = int(input("\n🔢 Vnesi ID dirke, ki jo želiš urediti: "))
+            cur.execute("SELECT * FROM Dirka WHERE id = %s", (id_dirke,))
+            if cur.fetchone():
+                break
+            else:
+                print("⚠️ Neveljaven ID. Poskusi znova.")
+        except ValueError:
+            print("⚠️ Vnesi veljavno številko.")
 
+    # Pridobi vse prijavljene za to dirko
+    cur.execute("""
+        SELECT uporabnisko_ime 
+        FROM TrenutnaDirka 
+        WHERE id_dirke = %s 
+        ORDER BY uporabnisko_ime
+    """, (id_dirke,))
+    prijavljeni = [uporabnik[0] for uporabnik in cur.fetchall()]
+
+    if not prijavljeni:
+        print("⚠️ Ni prijavljenih uporabnikov za to dirko.")
+        return
+
+    # Vpiši rezultate
     rezultati = []
-    for i in range(len(dirka)):
-        uporabnik = input(f"Vnesi uporabnika, ki je {i+1}. mesto: ").strip()
-        rezultati.append(uporabnik)
+    tocke_f1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] + [0] * (len(prijavljeni) - 10)
 
-    for i, uporabnik in enumerate(rezultati):
-        tocke = tocke_f1[i] if i < 10 else 0
+    print("\n🏆 Vpiši rezultate (od 1. mesta naprej):")
+    for mesto, uporabnik in enumerate(prijavljeni, start=1):
+        print(f"{mesto}. {uporabnik}")
+        rezultati.append((id_dirke, uporabnik, mesto, tocke_f1[mesto - 1]))
 
-        # Vstavi rezultat v tabelo
+    # Shrani rezultate v bazo
+    for rezultat in rezultati:
         cur.execute("""
-            INSERT INTO RezultatDirke (id_dirke, uporabnisko_ime, uvrstitev, tocke)
+            INSERT INTO RezultatDirke (id_dirke, uporabnisko_ime, uvrstitev, tocke) 
             VALUES (%s, %s, %s, %s)
-        """, (dirka[0][0], uporabnik, i+1, tocke))
-
-        # Posodobi točke pri uporabniku
+        """, rezultat)
+        
+        # Posodobi točke uporabnika
         cur.execute("""
-            UPDATE Uporabnik
-            SET tocke = tocke + %s
+            UPDATE Uporabnik 
+            SET tocke = tocke + %s 
             WHERE uporabnisko_ime = %s
-        """, (tocke, uporabnik))
+        """, (rezultat[3], rezultat[1]))
 
     conn.commit()
-    print("\n✅ Rezultati so bili uspešno shranjeni!")
+    print("\n✅ Rezultati uspešno shranjeni!")
 
 
 def prikazi_profil_admin(cur, conn, admin):

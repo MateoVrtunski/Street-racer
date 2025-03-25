@@ -78,12 +78,76 @@ INSERT INTO uporabnik (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto,
 (11, 'mateo', 'geslo123', 'Mateo', 'Vrtunski', 100, 1, 'DBS Superleggera'),
 (22, 'tian','geslo123', 'Tian', 'Lipovšek', 100, 3, 'M5 Competition');
 
+INSERT INTO uporabnik (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto, model_avta) VALUES
+(21, 'lewishamilton', 'silverarrows44', 'Lewis', 'Hamilton', 0, 4, 'AMG GT Black Series'),
+(31, 'sebvettel', 'fourtimechamp', 'Sebastian', 'Vettel', 0, 15, '918 Spyder'),
+(41, 'charlesleclerc', 'monaco16', 'Charles', 'Leclerc', 0, 12, 'LaFerrari'),
+(51, 'sergioperez', 'checo11', 'Sergio', 'Pérez', 0, 6, 'Aventador SVJ'),
+(61, 'georgerussell', 'mrconsistency63', 'George', 'Russell', 0, 14, 'SLS AMG'),
+(71, 'lando_norris', 'norris4', 'Lando', 'Norris', 0, 18, '720S'),
+(81, 'carlossainz', 'smoothoperator55', 'Carlos', 'Sainz', 0, 5, '911 Turbo S'),
+(91, 'valtteribottas', 'bottas77', 'Valtteri', 'Bottas', 0, 3, 'M5 Competition'),
+(101, 'danielricciardo', 'honeybadger3', 'Daniel', 'Ricciardo', 0, 16, 'Huracán Evo'),
+(111, 'mickschumacher', 'schumi47', 'Mick', 'Schumacher', 0, 13, 'i8'),
+(121, 'kevinmagnussen', 'km20', 'Kevin', 'Magnussen', 0, 1, 'DBS Superleggera'),
+(131, 'pierregasly', 'pg10', 'Pierre', 'Gasly', 0, 7, 'Chiron Super Sport 300+'),
+(141, 'estebanocon', 'ocon31', 'Esteban', 'Ocon', 0, 11, 'Vantage AMR'),
+(151, 'yukitsunoda', 'tsu22', 'Yuki', 'Tsunoda', 0, 8, 'Speedtail'),
+(161, 'alexalbon', 'albon23', 'Alex', 'Albon', 0, 19, 'Zonda Cinque'),
+(171, 'zhouguanyu', 'zhou24', 'Zhou', 'Guanyu', 0, 9, 'Huayra Roadster BC'),
+(181, 'nicoschumacher', 'nico27', 'Nico', 'Hülkenberg', 0, 10, 'Jesko Absolut'),
+(191, 'oscpiasti', 'piastri81', 'Oscar', 'Piastri', 0, 17, 'Veyron 16.4'),
+(201, 'felipemassa', 'massa19', 'Felipe', 'Massa', 0, 20, 'Agera RS');
+
 INSERT INTO boss (id, uporabnisko_ime, geslo, ime, priimek, tocke, id_avto, model_avta) VALUES
 (1, 'mateo', 'geslo123', 'Mateo', 'Vrtunski', 100, 1, 'DBS Superleggera'),
 (2, 'tian','geslo123', 'Tian', 'Lipovšek', 100, 3, 'M5 Competition');
 
-select * from boss;
+select * from trenutnadirka;
 ALTER TABLE boss DROP COLUMN tocke;
 ALTER TABLE boss DROP COLUMN id_avto;
 ALTER TABLE boss DROP COLUMN model_avta;
+
+INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUES
+(1, 'lewishamilton', 4, 'AMG GT Black Series'),
+(1, 'sebvettel', 15, '918 Spyder'),
+(1, 'charlesleclerc', 12, 'LaFerrari'),
+(1, 'sergioperez', 6, 'Aventador SVJ'),
+(1, 'georgerussell', 14, 'SLS AMG'),
+(1, 'lando_norris', 18, '720S'),
+(1, 'carlossainz', 5, '911 Turbo S'),
+(1, 'valtteribottas', 3, 'M5 Competition'),
+(1, 'danielricciardo', 16, 'Huracán Evo'),
+(1, 'mickschumacher', 13, 'i8'),
+(1, 'kevinmagnussen', 1, 'DBS Superleggera'),
+(1, 'pierregasly', 7, 'Chiron Super Sport 300+'),
+(1, 'estebanocon', 11, 'Vantage AMR'),
+(1, 'yukitsunoda', 8, 'Speedtail'),
+(1, 'alexalbon', 19, 'Zonda Cinque'),
+(1, 'zhouguanyu', 9, 'Huayra Roadster BC'),
+(1, 'nicoschumacher', 10, 'Jesko Absolut'),
+(1, 'oscpiasti', 17, 'Veyron 16.4'),
+(1, 'felipemassa', 20, 'Agera RS'),
+(2, 'felipemassa', 20, 'Agera RS'),
+(2, 'lewishamilton', 4, 'AMG GT Black Series'),
+(2, 'sebvettel', 15, '918 Spyder'),
+(2, 'charlesleclerc', 12, 'LaFerrari'),
+(2, 'sergioperez', 6, 'Aventador SVJ'),
+(2, 'georgerussell', 14, 'SLS AMG'),
+(2, 'lando_norris', 18, '720S'),
+(2, 'carlossainz', 5, '911 Turbo S'),
+(2, 'valtteribottas', 3, 'M5 Competition'),
+(2, 'danielricciardo', 16, 'Huracán Evo'),
+(2, 'mickschumacher', 13, 'i8'),
+(2, 'kevinmagnussen', 1, 'DBS Superleggera'),
+(2, 'pierregasly', 7, 'Chiron Super Sport 300+'),
+(2, 'estebanocon', 11, 'Vantage AMR'),
+(2, 'yukitsunoda', 8, 'Speedtail'),
+(2, 'alexalbon', 19, 'Zonda Cinque'),
+(2, 'zhouguanyu', 9, 'Huayra Roadster BC'),
+(2, 'nicoschumacher', 10, 'Jesko Absolut'),
+(2, 'oscpiasti', 17, 'Veyron 16.4');
+
+select * from trenutnadirka;
+
 
