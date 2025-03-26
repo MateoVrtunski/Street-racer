@@ -72,10 +72,11 @@ def prikazi_meni():
 def prikazi_meni_uporabnika():
     print("\n📌 MOŽNOSTI:")
     print("1️⃣ Rezultati dirk")
-    print("2️⃣ Prijava na dirko")
-    print("3️⃣ Odjava na dirko")
-    print("4️⃣ Moj profil")
-    print("5️⃣ Odjava")
+    print("2️⃣ Poglej Championship")
+    print("3️⃣ Prijava na dirko")
+    print("4️⃣ Odjava na dirko")
+    print("5️⃣ Moj profil")
+    print("6️⃣ Odjava")
 
 
 def izberi_dirko(cur, conn, uporabnik):
@@ -260,12 +261,14 @@ def glavna():
                     if izbira == "1":
                         admin.prikazi_rezultate_dirke(cur)
                     elif izbira == "2":
-                        izberi_dirko(cur, conn, uporabnik)
+                        admin.poglej_championship(cur)
                     elif izbira == "3":
-                        odjava_dirke(cur, conn, uporabnik)
+                        izberi_dirko(cur, conn, uporabnik)
                     elif izbira == "4":
-                        prikazi_profil(cur, conn, uporabnik)
+                        odjava_dirke(cur, conn, uporabnik)
                     elif izbira == "5":
+                        prikazi_profil(cur, conn, uporabnik)
+                    elif izbira == "6":
                         print("\n👋 Odjava...")
                         break
                     else:

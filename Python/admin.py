@@ -158,8 +158,6 @@ def doloci_rezultate(cur, conn):
         return
 
 
-
-
 def prikazi_profil_admin(cur, conn, admin):
     cur.execute("SELECT ime, priimek FROM Boss WHERE uporabnisko_ime = %s", (admin,))
     rezultat = cur.fetchone()
@@ -220,6 +218,20 @@ def prikazi_rezultate_dirke(cur):
         except ValueError:
             print("⚠️ Vnesi veljaven ID dirke.")
 
+def poglej_championship(cur):
+    # Popravljena poizvedba brez GROUP BY
+    cur.execute("SELECT ime, priimek, tocke FROM Uporabnik ORDER BY tocke DESC")
+    rezultat = cur.fetchall()
+    
+    if rezultat:
+        print("\n🏁 Championship:")
+        i = 1
+        for vrstica in rezultat:
+            print(f"{i}. {vrstica[0]} {vrstica[1]} ima {vrstica[2]} točk")
+            i += 1
+    else:
+        print("⚠️ Ni nobenega.")
+
 def admin_menu(cur, conn):
     admin = prijava_admin(cur)
     if not admin:
@@ -232,7 +244,8 @@ def admin_menu(cur, conn):
         print("3️⃣ Preglej trenutno dirko")
         print("4️⃣ Določi rezultate dirke")
         print("5️⃣ Poglej rezultate preteklih dirk")
-        print("6️⃣ Izhod")
+        print("6️⃣ Poglej Championship")
+        print("7️⃣ Izhod")
 
         izbira = input("Izberi možnost: ").strip()
 
@@ -247,6 +260,8 @@ def admin_menu(cur, conn):
         elif izbira == "5":
             prikazi_rezultate_dirke(cur)
         elif izbira == "6":
+            poglej_championship(cur)
+        elif izbira == "7":
             print("\n👋 Izhod iz admin panela.")
             break
         else:
