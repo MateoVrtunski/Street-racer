@@ -71,24 +71,20 @@ def prikazi_meni():
 
 def prikazi_meni_uporabnika():
     print("\n📌 MOŽNOSTI:")
-    print("1️⃣ Prijava na dirko")
-    print("2️⃣ Moj profil")
-    print("3️⃣ Odjava")
+    print("1️⃣ Rezultati dirk")
+    print("2️⃣ Prijava na dirko")
+    print("3️⃣ Odjava na dirko")
+    print("4️⃣ Moj profil")
+    print("5️⃣ Odjava")
 
-def prikazi_dirke(cur):
-    cur.execute("SELECT id, datum, vreme, ime_dirkalisca FROM Dirka ORDER BY datum")
-    dirke = cur.fetchall()
-
-    print("\n🏁 Razpoložljive dirke:")
-    for dirka in dirke:
-        print(f"➡️ ID: {dirka[0]}, Datum: {dirka[1]}, Vreme: {dirka[2]}, Dirkališče: {dirka[3]}")
-    
-    return dirke
 
 def izberi_dirko(cur, conn, uporabnik):
-    dirke = prikazi_dirke(cur)
+    dirke = admin.prikazi_trenutno_dirko(cur)
     
-    izbrani_id = input("\nVnesi ID dirke, na katero se želiš prijaviti: ").strip()
+    izbrani_id = input("\nVnesi ID dirke, na katero se želiš prijaviti (ali 0 za nazaj): ").strip()
+    if izbrani_id == "0":
+        print("🔙 Vračam te nazaj v meni.")
+        return False
 
     # Preveri, ali obstaja dirka s tem ID-jem
     cur.execute("SELECT * FROM Dirka WHERE id = %s", (izbrani_id,))
@@ -97,7 +93,24 @@ def izberi_dirko(cur, conn, uporabnik):
     if not dirka:
         print("\n⚠️ Neveljaven ID dirke. Poskusi znova.")
         return False
+    
+    cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s", (izbrani_id,))
+    rezultati_obstajajo = cur.fetchone()[0] > 0
 
+    if rezultati_obstajajo:
+        print("\n❌ Ta dirka je že zaključena! Ne moreš se več prijaviti.")
+        return False
+
+    cur.execute("""
+        SELECT COUNT(*) FROM TrenutnaDirka 
+        WHERE id_dirke = %s AND uporabnisko_ime = %s
+    """, (izbrani_id, uporabnik))
+    ze_prijavljen = cur.fetchone()[0] > 0
+
+    if ze_prijavljen:
+        print("\nℹ️ Na to dirko si že prijavljen! Ni potrebno ponovno prijaviti.")
+        return False
+    
     # Preveri, koliko ljudi je že prijavljenih na to dirko
     cur.execute("SELECT COUNT(*) FROM TrenutnaDirka WHERE id_dirke = %s", (izbrani_id,))
     stevilo_prijavljenih = cur.fetchone()[0]
@@ -178,6 +191,47 @@ def prikazi_profil(cur, conn, uporabnik):
                 else:
                     print("⚠️ Neveljaven ID avta. Poskusi znova.")
 
+def odjava_dirke(cur, conn, uporabnik):
+    # Prikaži dirke, kjer je uporabnik prijavljen in rezultati še niso vpisani
+    cur.execute("""
+        SELECT d.id, d.ime_dirkalisca, d.datum
+        FROM Dirka d
+        JOIN TrenutnaDirka td ON d.id = td.id_dirke
+        WHERE td.uporabnisko_ime = %s
+        AND d.id NOT IN (SELECT id_dirke FROM RezultatDirke)
+    """, (uporabnik,))
+    dirke = cur.fetchall()
+
+    if not dirke:
+        print("\nℹ️ Nisi prijavljen na nobeno dirko ali pa so rezultati že vneseni.")
+        return
+
+    print("\n🚗 Dirke, s katerih se lahko odjaviš:")
+    for dirka in dirke:
+        print(f"📅 ID: {dirka[0]}, Dirka: {dirka[1]}, Datum: {dirka[2]}")
+
+    while True:
+        izbrani_id = input("\nVnesi ID dirke, s katere se želiš odjaviti (ali 0 za nazaj): ").strip()
+        if izbrani_id == "0":
+            print("🔙 Vračam te nazaj v meni.")
+            return
+
+        # Preveri, ali je uporabnik prijavljen na to dirko
+        cur.execute("""
+            SELECT COUNT(*) FROM TrenutnaDirka 
+            WHERE id_dirke = %s AND uporabnisko_ime = %s
+        """, (izbrani_id, uporabnik))
+        if cur.fetchone()[0] == 0:
+            print("\n⚠️ Nisi prijavljen na to dirko ali rezultati so že vpisani.")
+            continue
+
+        # Odjava iz dirke
+        cur.execute("DELETE FROM TrenutnaDirka WHERE id_dirke = %s AND uporabnisko_ime = %s", (izbrani_id, uporabnik))
+        conn.commit()
+        print("\n✅ Uspešno si se odjavil z dirke!")
+        return
+
+
 def glavna():
     conn, cur = ustvari_povezavo()
 
@@ -203,12 +257,15 @@ def glavna():
                 while True:
                     prikazi_meni_uporabnika()
                     izbira = input("\n🔢 Izberi možnost: ").strip()
-
                     if izbira == "1":
-                        izberi_dirko(cur, conn, uporabnik)
+                        admin.prikazi_rezultate_dirke(cur)
                     elif izbira == "2":
-                        prikazi_profil(cur, conn, uporabnik)
+                        izberi_dirko(cur, conn, uporabnik)
                     elif izbira == "3":
+                        odjava_dirke(cur, conn, uporabnik)
+                    elif izbira == "4":
+                        prikazi_profil(cur, conn, uporabnik)
+                    elif izbira == "5":
                         print("\n👋 Odjava...")
                         break
                     else:

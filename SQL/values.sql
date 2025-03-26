@@ -149,6 +149,3 @@ INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUE
 (2, 'oscpiasti', 17, 'Veyron 16.4');
 
 select * from rezultatdirke;
-
-
-
