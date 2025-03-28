@@ -2,31 +2,41 @@
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registracija</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h2>🆕 Registracija Uporabnika</h2>
+        <h2>📝 Registracija novega uporabnika</h2>
         <form action="/register" method="post">
-            <label for="new_username">Uporabniško ime:</label>
-            <input type="text" id="new_username" name="new_username" required>
-
-            <label for="new_password">Geslo:</label>
-            <input type="password" id="new_password" name="new_password" required>
-
-            <label for="confirm_password">Potrdi geslo:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
-
-            <button type="submit">Registracija</button>
+            <!-- Personal Information -->
+            <label for="ime">Ime:</label>
+            <input type="text" id="ime" name="ime" required>
+            
+            <label for="priimek">Priimek:</label>
+            <input type="text" id="priimek" name="priimek" required>
+            
+            <label for="username">Uporabniško ime:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Geslo:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <!-- Car Selection -->
+            <label for="avto">Izberi avto:</label>
+            <select id="avto" name="avto" required>
+                % for car in cars:
+                <option value="{{car[0]}}">
+                    {{car[1]}} {{car[2]}} ({{car[3]}} KM, max {{car[4]}} km/h)
+                </option>
+                % end
+            </select>
+            
+            <button type="submit">Registriraj se</button>
         </form>
-
-        <p>Že imate račun? <a href="/login_uporabnika">Prijava</a></p>
-
-        <a href="/">
-            <button style="background-color: gray;">🔙 Nazaj</button>
-        </a>
+        
+        <p>Že imate račun? <a href="/login_uporabnika.html">Prijava</a></p>
+        <a href="/"><button style="background-color: gray;">🔙 Nazaj</button></a>
     </div>
 </body>
 </html>

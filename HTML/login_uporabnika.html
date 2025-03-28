@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prijava Uporabnika</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
@@ -15,16 +15,13 @@
 
             <label for="password">Geslo:</label>
             <input type="password" id="password" name="password" required>
-            <a href="meni_uporabnika.html">
-                <button type="submit">Prijava</button>
-            </a>
+
+            <button type="submit">Prijava</button>
         </form>
 
-        <p>Še nimate računa? <a href="register_uporabnika.html">
-            <button type="submit">Registracija</button>
-        </a></p>
+        <p>Še nimate računa? <a href="/register_uporabnika.html">Registracija</a></p>
 
-        <a href="index.html">
+        <a href="/">
             <button style="background-color: gray;">🔙 Nazaj</button>
         </a>
     </div>

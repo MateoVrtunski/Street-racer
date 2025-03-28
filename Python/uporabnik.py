@@ -1,67 +1,75 @@
 from dostop import ustvari_povezavo
 import admin
+import psycopg2
 
 db = 'sem2024_mateov'
 host = 'baza.fmf.uni-lj.si'
 user = 'javnost'
 password = 'javnogeslo'
 
-def prijava_uporabnika(cur):
-    while True:
-        uporabnik = input("🔑 Vnesi svoje uporabniško ime: ").strip()
-        geslo = input("🔒 Vnesi geslo: ").strip()
+def dobimo_avte():
+    """Returns all cars for registration form"""
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("SELECT id, znamka, model, moc, max_hitrost FROM Avto ORDER BY id")
+        return cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+
+def prijava_uporabnika(username, password):
+
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s AND geslo = %s", 
+                   (username, password))
+        return cur.fetchone() is not None
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
+    
+
+def registracija_uporabnika(username=None, ime=None, priimek=None, password=None, avto_id=None):
+    """
+    Combined function for registration:
+    - When called with no args, returns available cars for registration form
+    - When called with all args, processes registration
+    """
+    conn, cur = ustvari_povezavo()
+    try:
+        # Check if username exists
+        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (username,))
+        if cur.fetchone():
+            return False
         
-        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s AND geslo = %s", (uporabnik, geslo))
-        rezultat = cur.fetchone()
-
-        if rezultat:
-            print(f"\n✅ Prijavljen si kot: {rezultat[3]} {rezultat[4]} (Uporabniško ime: {rezultat[1]})\n")
-            return uporabnik
-        else:
-            print("\n⚠️ Napačno uporabniško ime ali geslo. Poskusi znova.")
-
-def registracija_uporabnika(cur, conn):
-    print("\n📌 Registracija novega uporabnika:")
-
-    while True:
-        uporabnisko_ime = input("👤 Vnesi uporabniško ime: ").strip()
-
-        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
-        if cur.fetchone():
-            print("⚠️ To uporabniško ime že obstaja. Izberi drugo.")
-        else:
-            break
-    
-    ime = input("📛 Vnesi ime: ").strip()
-    priimek = input("📛 Vnesi priimek: ").strip()
-    geslo = input("🔒 Ustvari geslo: ").strip()
-
-    cur.execute("SELECT id FROM Avto")
-    avtomobili = cur.fetchall()
-    
-    print("\n🚗 Izberi avto:")
-    for avto in avtomobili:
-        cur.execute("SELECT znamka, model FROM Avto WHERE id = %s", (avto[0],))
-        znamka, model = cur.fetchone()
-        print(f"{avto[0]}. {znamka} {model}")
-
-    while True:
-        id_avto = input("\n🔢 Vnesi ID izbranega avta: ").strip()
-        cur.execute("SELECT * FROM Avto WHERE id = %s", (id_avto,))
-        if cur.fetchone():
-            break
-        else:
-            print("⚠️ Neveljaven ID avta. Poskusi znova.")
-
-    cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
-    nov_id = cur.fetchone()[0]
-
-    cur.execute("INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto) VALUES (%s, %s, %s, %s, %s, %s)", 
-                (nov_id, uporabnisko_ime, ime, priimek, geslo, id_avto))
-    
-    conn.commit()
-    print("\n✅ Registracija uspešna! Zdaj se lahko prijaviš.\n")
-    return uporabnisko_ime
+        # Check if car exists
+        cur.execute("SELECT * FROM Avto WHERE id = %s", (avto_id,))
+        if not cur.fetchone():
+            return False
+        
+        # Get next ID
+        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
+        new_id = cur.fetchone()[0]
+        
+        # Insert new user
+        cur.execute("""
+            INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, tocke)
+            VALUES (%s, %s, %s, %s, %s, %s, 0)
+        """, (new_id, username, ime, priimek, password, avto_id))
+        
+        conn.commit()
+        return True
+        
+    except psycopg2.Error as e:
+        conn.rollback()
+        print(f"Database error: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
 def prikazi_meni():
     print("\n📌 GLAVNI MENI:")
@@ -285,4 +293,4 @@ def glavna():
         else:
             print("⚠️ Neveljavna izbira. Poskusi znova.")
 
-glavna()
+
