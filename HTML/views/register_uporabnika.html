@@ -8,33 +8,40 @@
 <body>
     <div class="container">
         <h2>📝 Registracija novega uporabnika</h2>
-        <form action="/register" method="post">
-            <!-- Personal Information -->
+
+        % if error:
+            <p style="color: red;">{{ error }}</p>
+        % end
+        % if success:
+            <p style="color: green;">{{ success }}</p>
+        % end
+
+        <form action="/register" method="POST">
             <label for="ime">Ime:</label>
             <input type="text" id="ime" name="ime" required>
-            
+
             <label for="priimek">Priimek:</label>
             <input type="text" id="priimek" name="priimek" required>
-            
+
             <label for="username">Uporabniško ime:</label>
             <input type="text" id="username" name="username" required>
-            
+
             <label for="password">Geslo:</label>
             <input type="password" id="password" name="password" required>
-            
-            <!-- Car Selection -->
+
+            <!-- Izbira avtomobila -->
             <label for="avto">Izberi avto:</label>
             <select id="avto" name="avto" required>
                 % for car in cars:
-                <option value="{{car[0]}}">
-                    {{car[1]}} {{car[2]}} ({{car[3]}} KM, max {{car[4]}} km/h)
-                </option>
+                    <option value="{{car[0]}}">
+                        {{car[1]}} {{car[2]}} ({{car[3]}} KM, max {{car[4]}} km/h)
+                    </option>
                 % end
             </select>
-            
+
             <button type="submit">Registriraj se</button>
         </form>
-        
+
         <p>Že imate račun? <a href="/login_uporabnika.html">Prijava</a></p>
         <a href="/"><button style="background-color: gray;">🔙 Nazaj</button></a>
     </div>

@@ -1,6 +1,8 @@
 from dostop import ustvari_povezavo
 import admin
 import psycopg2
+from bottle import template
+
 
 db = 'sem2024_mateov'
 host = 'baza.fmf.uni-lj.si'
@@ -12,11 +14,14 @@ def dobimo_avte():
     conn, cur = ustvari_povezavo()
     try:
         cur.execute("SELECT id, znamka, model, moc, max_hitrost FROM Avto ORDER BY id")
-        return cur.fetchall()
+        cars = cur.fetchall()
+        if cars:
+            return cars
     finally:
         cur.close()
         conn.close()
 
+    
 def prijava_uporabnika(username, password):
 
     conn, cur = ustvari_povezavo()
@@ -30,43 +35,34 @@ def prijava_uporabnika(username, password):
     finally:
         cur.close()
         conn.close()
-    
 
 def registracija_uporabnika(username=None, ime=None, priimek=None, password=None, avto_id=None):
     """
-    Combined function for registration:
-    - When called with no args, returns available cars for registration form
-    - When called with all args, processes registration
+    - Če so podani podatki, registrira novega uporabnika.
+    - Vedno vrne seznam avtomobilov za izbiro.
     """
     conn, cur = ustvari_povezavo()
     try:
-        # Check if username exists
+        # Preveri, ali uporabniško ime že obstaja
         cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (username,))
         if cur.fetchone():
-            return False
-        
-        # Check if car exists
+            return template("register_uporabnika", error="Uporabniško ime je že zasedeno!")
+
+        # Preveri, ali izbran avto obstaja
         cur.execute("SELECT * FROM Avto WHERE id = %s", (avto_id,))
         if not cur.fetchone():
-            return False
-        
-        # Get next ID
+            return template("register_uporabnika", error="Izbran avto ne obstaja!")
+
+        # Dobi naslednji ID
         cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
         new_id = cur.fetchone()[0]
-        
-        # Insert new user
+
+        # Vstavi novega uporabnika v bazo
         cur.execute("""
             INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, tocke)
             VALUES (%s, %s, %s, %s, %s, %s, 0)
         """, (new_id, username, ime, priimek, password, avto_id))
-        
-        conn.commit()
-        return True
-        
-    except psycopg2.Error as e:
-        conn.rollback()
-        print(f"Database error: {e}")
-        return False
+
     finally:
         cur.close()
         conn.close()

@@ -1,30 +1,29 @@
-from bottle import Bottle, run, static_file, request, redirect, template
+from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
 import os
 from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte
 from dostop import ustvari_povezavo
 
 app = Bottle()
 
-# Get the absolute path to the HTML directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
-HTML_DIR = os.path.abspath(os.path.join(current_dir, '..', 'HTML'))
+# Nastavimo pravilno pot do `views` mapo
+TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "HTML/views"))
 
-# Serve static files
+# Serve static files (CSS, JS, images)
 @app.route('/static/<filename:path>')
 def serve_static(filename):
-    return static_file(filename, root=HTML_DIR)
+    return static_file(filename, root="HTML/views/static")
 
-# Main routes
+# 🔥 **Pravilno serviranje HTML datotek z `template()`**
+@app.route('/<filename>.html')
+def serve_template(filename):
+    return template(filename, error=None, success=None)
+
+# 🏠 **Glavna stran**
 @app.route('/')
 def index():
-    return static_file('index.html', root=HTML_DIR)
+    return template('index')
 
-# Serve HTML files
-@app.route('/<filename:re:.*\\.html>')
-def serve_html(filename):
-    return static_file(filename, root=HTML_DIR)
-
-# User login route
+# 🔑 **Prijava uporabnika**
 @app.route('/login', method='POST')
 def login():
     username = request.forms.get('username').strip()
@@ -39,44 +38,29 @@ def login():
                 window.location.href = '/login_uporabnika.html';
             </script>
         '''
-
-# User registration rout
-@app.route('/register', method='POST')
+@app.route('/register_uporabnika.html')
 def register_page():
-    cars = dobimo_avte()  # Use the function from uporabnik.py
-    return cars
-def register():
-    # Get all form data
-    username = request.forms.get('username')
-    password = request.forms.get('password')
-    ime = request.forms.get('ime')
-    priimek = request.forms.get('priimek')
-    avto_id = request.forms.get('avto')
+    cars = dobimo_avte()  # Get cars from database
+    return template('register_uporabnika', cars=cars, error=None, success=None)
+
+# ✅ **Obdelava registracije**
+@app.route('/register', method="POST")
+def process_register():
+    cars = dobimo_avte()
+    username = request.forms.get("username")
+    ime = request.forms.get("ime")
+    priimek = request.forms.get("priimek")
+    password = request.forms.get("password")
+    avto_id = request.forms.get("avto")
     
-    # Process registration
-    conn, cur = ustvari_povezavo()
-    try:
-        success = registracija_uporabnika(cur, conn, username, ime, priimek, password, avto_id)
-        if success:
-            return '''
-                <script>
-                    alert('Registracija uspešna!');
-                    window.location.href = '/login_uporabnika.html';
-                </script>
-            '''
-        else:
-            return '''
-                <script>
-                    alert('Registracija ni uspela!');
-                    window.location.href = '/register_uporabnika.html';
-                </script>
-            '''
-    finally:
-        cur.close()
-        conn.close()
+    success = registracija_uporabnika(username, ime, priimek, password, avto_id)
+    
+    if success:
+        return template("register_uporabnika", cars=cars, success="Registracija uspešna!", error=None)
+    else:
+        return template("register_uporabnika", cars=cars, error="Napaka pri registraciji!", success=None)
 
 
-    
-# Run the app
+# 🚀 **Zagon Bottle strežnika**
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True, reloader=True)
