@@ -9,12 +9,6 @@
     <div class="container">
         <h2>📝 Registracija novega uporabnika</h2>
 
-        % if error:
-            <p style="color: red;">{{ error }}</p>
-        % end
-        % if success:
-            <p style="color: green;">{{ success }}</p>
-        % end
 
         <form action="/register" method="POST">
             <label for="ime">Ime:</label>
@@ -41,6 +35,8 @@
 
             <button type="submit">Registriraj se</button>
         </form>
+        
+       
 
         <p>Že imate račun? <a href="/login_uporabnika.html">Prijava</a></p>
         <a href="/"><button style="background-color: gray;">🔙 Nazaj</button></a>

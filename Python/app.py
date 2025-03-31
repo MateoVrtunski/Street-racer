@@ -53,13 +53,31 @@ def process_register():
     password = request.forms.get("password")
     avto_id = request.forms.get("avto")
     
-    success = registracija_uporabnika(username, ime, priimek, password, avto_id)
+    result = registracija_uporabnika(username, ime, priimek, password, avto_id)
     
-    if success:
-        return template("register_uporabnika", cars=cars, success="Registracija uspešna!", error=None)
-    else:
-        return template("register_uporabnika", cars=cars, error="Napaka pri registraciji!", success=None)
-
+    if result == 1:  # Username exists
+        return '''
+            <script>
+                alert('Uporabniško ime že obstaja!');
+                window.location.href = '/register_uporabnika.html';
+            </script>
+        '''
+    elif result == 2:  # Success
+        return '''
+            <script>
+                alert('Registracija uspešna!');
+                window.location.href = '/meni_uporabnika.html';
+            </script>
+        '''
+    else:  # Other error
+        return '''
+            <script>
+                alert('Napaka pri registraciji!');
+                window.location.href = '/register_uporabnika.html';
+            </script>
+        '''
+    
+    
 
 # 🚀 **Zagon Bottle strežnika**
 if __name__ == '__main__':

@@ -42,30 +42,39 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
     - Vedno vrne seznam avtomobilov za izbiro.
     """
     conn, cur = ustvari_povezavo()
+    
     try:
-        # Preveri, ali uporabniško ime že obstaja
+        # Check if username exists
         cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (username,))
         if cur.fetchone():
-            return template("register_uporabnika", error="Uporabniško ime je že zasedeno!")
-
-        # Preveri, ali izbran avto obstaja
+            return 1
+        
+        # Check if car exists
         cur.execute("SELECT * FROM Avto WHERE id = %s", (avto_id,))
         if not cur.fetchone():
-            return template("register_uporabnika", error="Izbran avto ne obstaja!")
-
-        # Dobi naslednji ID
+            return 3
+        
+        # Get next ID
         cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
         new_id = cur.fetchone()[0]
 
-        # Vstavi novega uporabnika v bazo
+        # Insert new user
         cur.execute("""
             INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, tocke)
             VALUES (%s, %s, %s, %s, %s, %s, 0)
         """, (new_id, username, ime, priimek, password, avto_id))
-
+        
+        conn.commit()  # THIS WAS MISSING - CRUCIAL!
+        return 2
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Database error: {e}")
+        return 3
     finally:
         cur.close()
         conn.close()
+
 
 def prikazi_meni():
     print("\n📌 GLAVNI MENI:")
