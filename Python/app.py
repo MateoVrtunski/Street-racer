@@ -3,7 +3,7 @@ import os
 from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte
 from dostop import ustvari_povezavo
 from beaker.middleware import SessionMiddleware
-from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina
+from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko
 
 app = Bottle()
 
@@ -127,6 +127,11 @@ def meni_uporabnika():
 def championship_page():
     championship_data = poglej_championship()  # Dobimo podatke
     return template('championship', championship=championship_data)
+
+@app.route('/poglej_prijave.html')
+def poglej_dirke():
+    trenutne, koncane = prikazi_trenutno_dirko()  # Dobimo podatke
+    return template('poglej_prijave', trenutne=trenutne, koncane = koncane)
 
 @app.route('/rezultati_dirk.html')
 def rezultati_dirk_page():

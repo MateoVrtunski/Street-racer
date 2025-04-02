@@ -43,53 +43,54 @@ def dodaj_admina(cur, conn):
         print(f"✅ Uporabnik {uporabnisko_ime} je zdaj admin!")
 
 
-def prikazi_trenutno_dirko(cur):
+def prikazi_trenutno_dirko():
+    conn, cur = ustvari_povezavo()
     # Poizvedba za vse dirke s številom prijavljenih
-    cur.execute("""
-        SELECT d.id, d.datum, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) 
-        FROM Dirka d
-        LEFT JOIN TrenutnaDirka td ON d.id = td.id_dirke
-        GROUP BY d.id, d.datum, d.ime_dirkalisca
-        ORDER BY d.id
-    """)
-    vse_dirke = cur.fetchall()
+    try:
+        cur.execute("""
+            SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) 
+            FROM Dirka d
+            LEFT JOIN TrenutnaDirka td ON d.id = td.id_dirke
+            GROUP BY d.id, d.datum, d.ime_dirkalisca
+            ORDER BY d.id
+        """)
+        vse_dirke = cur.fetchall()
 
-    # Pridobi ID-jev dirk, ki so že končane (vsaj 10 vnosov v RezultatDirke s točkami)
-    cur.execute("""
-        SELECT id_dirke
-        FROM RezultatDirke
-        WHERE tocke > 0
-        GROUP BY id_dirke
-        HAVING COUNT(*) >= 10
-    """)
-    koncane_dirke_ids = {dirka[0] for dirka in cur.fetchall()}  # Uporabimo množico za hitrejše iskanje
+        # Pridobi ID-jev dirk, ki so že končane (vsaj 10 vnosov v RezultatDirke s točkami)
+        cur.execute("""
+            SELECT id_dirke
+            FROM RezultatDirke
+            WHERE tocke > 0
+            GROUP BY id_dirke
+            HAVING COUNT(*) >= 10
+        """)
+        koncane_dirke_ids = {dirka[0] for dirka in cur.fetchall()}  # Uporabimo množico za hitrejše iskanje
 
-    dirke = []
-    koncane_dirke = []
+        dirke = []
+        koncane_dirke = []
 
-    for dirka in vse_dirke:
-        if dirka[0] in koncane_dirke_ids:
-            koncane_dirke.append(dirka)
-        else:
-            dirke.append(dirka)
+        for dirka in vse_dirke:
+            if dirka[0] in koncane_dirke_ids:
+                koncane_dirke.append({
+                "id": dirka[0],
+                "datum": dirka[1],
+                "vreme": dirka[2],
+                "dirkalisce": dirka[3]
+            })
+            else:
+                dirke.append({
+                "id": dirka[0],
+                "datum": dirka[1],
+                "vreme": dirka[2],
+                "dirkalisce": dirka[3]
+            })
+        return dirke, koncane_dirke
+    finally:
+        cur.close()
+        conn.close()
+    
 
-    # Prikaz aktivnih dirk
-    if dirke:
-        print("\n🏁 Trenutne dirke:")
-        for dirka in dirke:
-            print(f"📅 ID: {dirka[0]}, Datum: {dirka[1]}, Dirka: {dirka[2]}, Prijavljeni: {dirka[3]}/20")
-    else:
-        print("\n🚫 Ni aktivnih dirk.")
-
-    # Prikaz končanih dirk
-    if koncane_dirke:
-        print("\n🏆 Končane dirke:")
-        for dirka in koncane_dirke:
-            print(f"✅ ID: {dirka[0]}, Datum: {dirka[1]}, Dirka: {dirka[2]}, Prijavljeni: {dirka[3]}/20")
-    else:
-        print("\n🚫 Ni končanih dirk.")
-
-    return dirke
+    
 
 
 def doloci_rezultate(cur, conn):

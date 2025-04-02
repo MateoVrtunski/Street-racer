@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pregled dirk</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🏁 Trenutne dirke</h1>
+
+        % if trenutne:
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Datum</th>
+                <th>Napovedano vreme</th>
+                <th>Dirkališče</th>
+            </tr>
+            % for dirka in trenutne:
+            <tr>
+                <td>{{ dirka["id"] }}</td>
+                <td>{{ dirka["datum"] }}</td>
+                <td>{{ dirka["vreme"] }}</td>
+                <td>{{ dirka["dirkalisce"] }}</td>
+            </tr>
+            % end
+        </table>
+        % else:
+            <p>⚠️ Ni treuntnih dirk.</p>
+        % end
+
+    </div>
+
+    <div class="container">
+        <h1>🏁 Končane dirke</h1>
+
+        % if koncane:
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Datum</th>
+                <th>Vreme</th>
+                <th>Dirkališče</th>
+            </tr>
+            % for dirka in koncane:
+            <tr>
+                <td>{{ dirka["id"] }}</td>
+                <td>{{ dirka["datum"] }}</td>
+                <td>{{ dirka["vreme"] }}</td>
+                <td>{{ dirka["dirkalisce"] }}</td>
+            </tr>
+            % end
+        </table>
+        % else:
+            <p>⚠️ Ni končanih dirk.</p>
+        % end
+
+        <br>
+        <a href="/meni_uporabnika.html">
+            <button>🔙 Nazaj</button>
+        </a>
+    </div>
+</body>
+</html>
