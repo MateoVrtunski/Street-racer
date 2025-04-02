@@ -4,15 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Championship</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Trenutno stanje championshipa!</h1>
-        <p>Izberite možnost:</p>
+        <h1>🏁 Trenutno stanje championshipa</h1>
 
-        <a href="meni_uporabnika.html">
-            <button>Nazaj</button>
+        % if championship:
+        <table border="1">
+            <tr>
+                <th>Mesto</th>
+                <th>Ime</th>
+                <th>Priimek</th>
+                <th>Točke</th>
+            </tr>
+            % for racer in championship:
+            <tr>
+                <td>{{ racer["mesto"] }}</td>
+                <td>{{ racer["ime"] }}</td>
+                <td>{{ racer["priimek"] }}</td>
+                <td>{{ racer["tocke"] }}</td>
+            </tr>
+            % end
+        </table>
+        % else:
+            <p>⚠️ Ni nobenih podatkov.</p>
+        % end
+
+        <br>
+        <a href="/meni_uporabnika.html">
+            <button>🔙 Nazaj</button>
         </a>
     </div>
 </body>

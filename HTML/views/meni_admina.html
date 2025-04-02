@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meni Admina</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🏁 Dobrodošli, {{username}}!</h1>
+        <p>Izberite možnost:</p>
+
+        <a href="/championship.html">
+            <button>Championship</button>
+        </a>
+        <br><br>
+        <a href="/določi_rezultate.html">
+            <button>Odjava na dirko</button>
+        </a>
+        <br><br>
+        <a href="/poglej_prijave.html">
+            <button>Odjava na dirko</button>
+        </a>
+        <br><br>
+        <a href="/dodaj_admina.html">
+            <button>Prijava na dirko</button>
+        </a>
+        <br><br>
+        <a href="/rezultati_dirk.html">
+            <button>Rezultati preteklih dirk</button>
+        </a>
+        <br><br>
+        <a href="/profil_admina.html">
+            <button>Moj profil</button>
+        </a>
+        <br><br>
+        <a href="/">
+            <button>Odjava</button>
+        </a>
+        <br><br>
+    </div>
+
+    <script>
+        // You can add JavaScript here to personalize the page
+        // For example, fetch and display the username
+        document.getElementById('username').textContent = localStorage.getItem('username') || 'Uporabnik';
+    </script>
+</body>
+</html>

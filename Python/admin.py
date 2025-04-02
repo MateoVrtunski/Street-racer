@@ -1,19 +1,19 @@
 import psycopg2
+from dostop import ustvari_povezavo
 
-def prijava_admin(cur):
-    print("\n🔑 ADMIN PRIJAVA")
-    uporabnisko_ime = input("Vnesi uporabniško ime admina: ").strip()
-    geslo = input("Vnesi geslo: ").strip()
+def prijava_admina(username, password):
 
-    cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s AND geslo = %s", (uporabnisko_ime, geslo))
-    admin = cur.fetchone()
-
-    if admin:
-        print(f"\n✅ Prijava uspešna! Pozdravljen, {admin[3]} {admin[4]}.")
-        return admin[1]  # Vrnemo uporabniško ime
-    else:
-        print("\n❌ Napačno uporabniško ime ali geslo.")
-        return None
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s AND geslo = %s", 
+                   (username, password))
+        return cur.fetchone() is not None
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
 def dodaj_admina(cur, conn):
     uporabnisko_ime = input("🔹 Vnesi uporabniško ime uporabnika, ki ga želiš dodati kot admina: ").strip()
@@ -178,28 +178,24 @@ def prikazi_profil_admin(cur, conn, admin):
             conn.commit()
             print("\n✅ Geslo uspešno spremenjeno!")
 
-def prikazi_rezultate_dirke(cur):
-    # Pridobi vse dirke, ki so že vpisane v RezultatDirke
-    cur.execute("""
-        SELECT DISTINCT d.id, d.datum, d.ime_dirkalisca
-        FROM Dirka d
-        JOIN RezultatDirke r ON d.id = r.id_dirke
-        ORDER BY d.datum DESC
-    """)
-    dirke = cur.fetchall()
+def pridobi_rezultate_dirk():
+    """Vrne seznam preteklih dirk z rezultati."""
+    conn, cur = ustvari_povezavo()
+    try:
+        # Pridobimo seznam vseh dirk, ki imajo rezultate
+        cur.execute("""
+            SELECT DISTINCT d.id, d.datum, d.ime_dirkalisca
+            FROM Dirka d
+            JOIN RezultatDirke r ON d.id = r.id_dirke
+            ORDER BY d.datum DESC
+        """)
+        dirke = cur.fetchall()
 
-    if not dirke:
-        print("\n🚫 Ni preteklih dirk z rezultati.")
-        return
+        dirka_podatki = []
+        for dirka in dirke:
+            id_dirke, datum, ime_dirkalisca = dirka
 
-    # Prikaz izbire dirke
-    print("\n🏆 Pretekle dirke z rezultati:")
-    for dirka in dirke:
-        print(f"📅 ID: {dirka[0]}, Datum: {dirka[1]}, Dirka: {dirka[2]}")
-
-    while True:
-        try:
-            id_dirke = int(input("\n🔢 Vnesi ID dirke, katere rezultate želiš videti: "))
+            # Pridobimo rezultate za vsako dirko
             cur.execute("""
                 SELECT r.uvrstitev, r.uporabnisko_ime, r.tocke
                 FROM RezultatDirke r
@@ -208,29 +204,44 @@ def prikazi_rezultate_dirke(cur):
             """, (id_dirke,))
             rezultati = cur.fetchall()
 
-            if rezultati:
-                print("\n🏁 Rezultati dirke:")
-                for vrstica in rezultati:
-                    print(f"🥇 {vrstica[0]}. {vrstica[1]} - {vrstica[2]} točk")
-                break
-            else:
-                print("⚠️ Ni rezultatov za to dirko. Poskusi znova.")
-        except ValueError:
-            print("⚠️ Vnesi veljaven ID dirke.")
+            dirka_podatki.append({
+                "id": id_dirke,
+                "datum": datum,
+                "ime_dirkalisca": ime_dirkalisca,
+                "rezultati": [
+                    {"uvrstitev": r[0], "uporabnisko_ime": r[1], "tocke": r[2]}
+                    for r in rezultati
+                ]
+            })
+        
+        return dirka_podatki
 
-def poglej_championship(cur):
-    # Popravljena poizvedba brez GROUP BY
-    cur.execute("SELECT ime, priimek, tocke FROM Uporabnik ORDER BY tocke DESC")
-    rezultat = cur.fetchall()
-    
-    if rezultat:
-        print("\n🏁 Championship:")
-        i = 1
-        for vrstica in rezultat:
-            print(f"{i}. {vrstica[0]} {vrstica[1]} ima {vrstica[2]} točk")
-            i += 1
-    else:
-        print("⚠️ Ni nobenega.")
+    finally:
+        cur.close()
+        conn.close()
+
+
+def poglej_championship():
+    """Vrne trenutno stanje championshipa kot seznam slovarjev."""
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("SELECT ime, priimek, tocke FROM Uporabnik ORDER BY tocke DESC")
+        rezultat = cur.fetchall()
+        
+        championship = []
+        for i, vrstica in enumerate(rezultat, start=1):
+            championship.append({
+                "mesto": i,
+                "ime": vrstica[0],
+                "priimek": vrstica[1],
+                "tocke": vrstica[2]
+            })
+        
+        return championship
+    finally:
+        cur.close()
+        conn.close()
+
 
 def admin_menu(cur, conn):
     admin = prijava_admin(cur)
