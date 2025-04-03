@@ -29,6 +29,34 @@
             </tr>
         </table>
 
+        <div class="container">
+            <h2>Trenutne prijave na dirko</h2>
+    
+            % if moje:
+            <table border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>Datum</th>
+                    <th>Napovedano vreme</th>
+                    <th>Dirkališče</th>
+                    <th>Prijavljeni</th>
+                </tr>
+                % for dirka in moje:
+                <tr>
+                    <td>{{ dirka["id"] }}</td>
+                    <td>{{ dirka["datum"] }}</td>
+                    <td>{{ dirka["vreme"] }}</td>
+                    <td>{{ dirka["dirkalisce"] }}</td>
+                    <td>{{ dirka["prijavljeni"] }}/20</td>
+                </tr>
+                % end
+            </table>
+            % else:
+                <p>⚠️ Niste prijavljeni na nobeno dirko.</p>
+            % end
+    
+        </div>
+
         <h2>🔒 Spremeni geslo</h2>
         <form action="/spremeni_geslo_uporabnika" method="POST">
             <input type="password" name="novo_geslo" placeholder="Novo geslo" required>

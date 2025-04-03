@@ -204,45 +204,73 @@ def spremeni_avto(uporabnik, avto_id):
         cur.close()
         conn.close()
 
-def odjava_dirke(cur, conn, uporabnik):
-    # Prikaži dirke, kjer je uporabnik prijavljen in rezultati še niso vpisani
-    cur.execute("""
-        SELECT d.id, d.ime_dirkalisca, d.datum
-        FROM Dirka d
-        JOIN TrenutnaDirka td ON d.id = td.id_dirke
-        WHERE td.uporabnisko_ime = %s
-        AND d.id NOT IN (SELECT id_dirke FROM RezultatDirke)
-    """, (uporabnik,))
-    dirke = cur.fetchall()
 
-    if not dirke:
-        print("\nℹ️ Nisi prijavljen na nobeno dirko ali pa so rezultati že vneseni.")
-        return
 
-    print("\n🚗 Dirke, s katerih se lahko odjaviš:")
-    for dirka in dirke:
-        print(f"📅 ID: {dirka[0]}, Dirka: {dirka[1]}, Datum: {dirka[2]}")
+def moje_dirke(uporabnik):
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("""
+            SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) AS prijavljeni
+            FROM Dirka d
+            JOIN TrenutnaDirka td ON d.id = td.id_dirke
+            WHERE td.uporabnisko_ime = %s
+            AND d.id NOT IN (SELECT id_dirke FROM RezultatDirke)
+            GROUP BY d.id, d.datum, d.vreme, d.ime_dirkalisca       
+        """, (uporabnik,))
+        vse_dirke = cur.fetchall()
 
-    while True:
-        izbrani_id = input("\nVnesi ID dirke, s katere se želiš odjaviti (ali 0 za nazaj): ").strip()
-        if izbrani_id == "0":
-            print("🔙 Vračam te nazaj v meni.")
-            return
+        dirke = []
+        for dirka in vse_dirke:
+            dirka_podatki = {
+                "id": dirka[0],
+                "datum": dirka[1],
+                "vreme": dirka[2],
+                "dirkalisce": dirka[3],
+                "prijavljeni": dirka[4],
+            }
+            dirke.append(dirka_podatki)
+            
+        return dirke
+    except Exception as e:
+        print(f"Napaka pri pridobivanju dirk: {e}")  # Log the error for debugging
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
+def odjava_dirke(uporabnik, id_dirke):
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("""
+            SELECT d.id, d.ime_dirkalisca, d.datum, d.vreme
+            FROM Dirka d
+            JOIN TrenutnaDirka td ON d.id = td.id_dirke
+            WHERE td.uporabnisko_ime = %s
+            AND d.id NOT IN (SELECT id_dirke FROM RezultatDirke)
+        """, (uporabnik,))
+        dirke = cur.fetchall()
+
+        if not dirke:
+            return "Nisi prijavljen na nobeno dirko ali pa so rezultati že vneseni."
+        
         # Preveri, ali je uporabnik prijavljen na to dirko
         cur.execute("""
             SELECT COUNT(*) FROM TrenutnaDirka 
             WHERE id_dirke = %s AND uporabnisko_ime = %s
-        """, (izbrani_id, uporabnik))
+        """, (id_dirke, uporabnik))
         if cur.fetchone()[0] == 0:
-            print("\n⚠️ Nisi prijavljen na to dirko ali rezultati so že vpisani.")
-            continue
+            return "Nisi prijavljen na to dirko ali rezultati so že vpisani."
 
         # Odjava iz dirke
-        cur.execute("DELETE FROM TrenutnaDirka WHERE id_dirke = %s AND uporabnisko_ime = %s", (izbrani_id, uporabnik))
+        cur.execute("DELETE FROM TrenutnaDirka WHERE id_dirke = %s AND uporabnisko_ime = %s", (id_dirke, uporabnik))
         conn.commit()
-        print("\n✅ Uspešno si se odjavil z dirke!")
-        return
+
+        return "✅ Uspešno si se odjavil z dirke!"
+    except Exception as e:
+        return f"⚠️ Napaka: {e}"
+    finally:
+        cur.close()
+        conn.close()
 
 
 def glavna():

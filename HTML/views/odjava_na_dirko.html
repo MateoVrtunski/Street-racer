@@ -3,16 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odjava na dirko</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Prijava na dirko</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script defer src="/static/script.js"></script> 
+    <style>
+    .klikabilna-vrstica.izbrana {
+        background-color: #d1e7ff;  /* Svetlo modra */
+        font-weight: bold;
+    }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Izberi na katero dirko bi se odjavil</h1>
-        <p>Izberite možnost:</p>
+        <h1>🏁 Odjava na dirko</h1>
 
-        <a href="meni_uporabnika.html">
-            <button>Nazaj</button>
+        % if not moje:
+            <p>🚫 Trenutno nisi prijavljen na nobeno dirko.</p>
+        % else:
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ime dirkališča</th>
+                        <th>Datum</th>
+                        <th>Vreme</th>
+                        <th>Prijavljeni</th>
+                    </tr>
+                </thead>
+            <tbody>
+                % for dirka in moje:
+                    <tr class="klikabilna-vrstica" data-id="{{ dirka['id'] }}">
+                        <td>{{ dirka['dirkalisce'] }}</td>
+                        <td>{{ dirka['datum'] }}</td>
+                        <td>{{ dirka['vreme'] }}</td>
+                        <td>{{ dirka['prijavljeni'] }}/20</td>
+                    </tr>
+                % end
+            </tbody>
+            </table>
+            
+        % end     
+            
+
+        <form action="/odjava_dirka" method="POST">
+            <input type="hidden" id="izbrana_dirka" name="id_dirke">
+            <button type="submit">Potrdi odjavo z dirke</button>
+        </form>
+        
+
+        <br>
+        <a href="/meni_uporabnika.html">
+            <button>🔙 Nazaj</button>
         </a>
     </div>
 </body>

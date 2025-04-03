@@ -1,6 +1,6 @@
 from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
 import os
-from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko
+from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke
 from dostop import ustvari_povezavo
 from beaker.middleware import SessionMiddleware
 from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina
@@ -147,8 +147,9 @@ def profil_uporabnika():
 
     profil_podatki = pridobi_profil(username)
     avtomobili = dobimo_avte()
+    moje = moje_dirke(username)
 
-    return template('profil_uporabnika', profil=profil_podatki, avtomobili=avtomobili)
+    return template('profil_uporabnika', profil=profil_podatki, avtomobili=avtomobili, moje = moje)
 
 
 @app.route('/spremeni_geslo_uporabnika', method="POST")
@@ -233,7 +234,6 @@ def posodobi_geslo():
 
 @app.route('/prijava_na_dirko.html')
 def prijava_dirka():
-
     trenutne, koncane = prikazi_trenutno_dirko()  # Dobimo podatke
     return template('prijava_na_dirko', trenutne=trenutne, koncane = koncane)
 
@@ -253,6 +253,28 @@ def obdelaj_prijavo_dirke():
         </script>
     '''
 
+@app.route('/odjava_na_dirko.html')
+def odjava_dirka():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    moje = moje_dirke(username)  # Dobimo podatke
+    return template('odjava_na_dirko', moje = moje)
+
+@app.route('/odjava_dirka', method="POST")
+def obdelaj_odjavo_dirke():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    
+    id_dirke = request.forms.get("id_dirke")
+
+    rezultat = odjava_dirke(username, id_dirke)
+
+    return f'''
+        <script>
+            alert("{rezultat}");
+            window.location.href = "/odjava_na_dirko.html";
+        </script>
+    '''
     
 app = SessionMiddleware(app, session_opts)
 
