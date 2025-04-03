@@ -92,72 +92,57 @@ def prikazi_meni_uporabnika():
     print("6️⃣ Odjava")
 
 
-def izberi_dirko(cur, conn, uporabnik):
-    dirke = admin.prikazi_trenutno_dirko(cur)
-    
-    izbrani_id = input("\nVnesi ID dirke, na katero se želiš prijaviti (ali 0 za nazaj): ").strip()
-    if izbrani_id == "0":
-        print("🔙 Vračam te nazaj v meni.")
-        return False
 
-    # Preveri, ali obstaja dirka s tem ID-jem
-    cur.execute("SELECT * FROM Dirka WHERE id = %s", (izbrani_id,))
-    dirka = cur.fetchone()
+def prijavi_na_dirko(uporabnik, id_dirke):
+    """Prijavi uporabnika na dirko, če izpolnjuje pogoje."""
+    conn, cur = ustvari_povezavo()
+    try:
+        # Preveri, ali je dirka že zaključena
+        cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s", (id_dirke,))
+        if cur.fetchone()[0] > 0:
+            return "❌ Ta dirka je že zaključena! Ne moreš se več prijaviti."
 
-    if not dirka:
-        print("\n⚠️ Neveljaven ID dirke. Poskusi znova.")
-        return False
-    
-    cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s", (izbrani_id,))
-    rezultati_obstajajo = cur.fetchone()[0] > 0
+        # Preveri, ali je uporabnik že prijavljen
+        cur.execute("""
+            SELECT COUNT(*) FROM TrenutnaDirka 
+            WHERE id_dirke = %s AND uporabnisko_ime = %s
+        """, (id_dirke, uporabnik))
+        if cur.fetchone()[0] > 0:
+            return "ℹ️ Na to dirko si že prijavljen! Ni potrebno ponovno prijaviti."
 
-    if rezultati_obstajajo:
-        print("\n❌ Ta dirka je že zaključena! Ne moreš se več prijaviti.")
-        return False
+        # Preveri, ali je dirka polna
+        cur.execute("SELECT COUNT(*) FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
+        if cur.fetchone()[0] >= 20:
+            return "❌ Dirka je polna! Poskusi izbrati drugo dirko."
 
-    cur.execute("""
-        SELECT COUNT(*) FROM TrenutnaDirka 
-        WHERE id_dirke = %s AND uporabnisko_ime = %s
-    """, (izbrani_id, uporabnik))
-    ze_prijavljen = cur.fetchone()[0] > 0
+        # Preveri, ali ima uporabnik izbran avto
+        cur.execute("SELECT id_avto FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
+        avto_podatki = cur.fetchone()
+        if not avto_podatki or avto_podatki[0] is None:
+            return "⚠️ Nimaš izbranega avta! Najprej izberi avto v svojem profilu."
 
-    if ze_prijavljen:
-        print("\nℹ️ Na to dirko si že prijavljen! Ni potrebno ponovno prijaviti.")
-        return False
-    
-    # Preveri, koliko ljudi je že prijavljenih na to dirko
-    cur.execute("SELECT COUNT(*) FROM TrenutnaDirka WHERE id_dirke = %s", (izbrani_id,))
-    stevilo_prijavljenih = cur.fetchone()[0]
+        id_avto = avto_podatki[0]
 
-    if stevilo_prijavljenih >= 20:
-        print("\n❌ Dirka je polna! Poskusi izbrati drugo dirko.")
-        return False
+        # Pridobi model avta
+        cur.execute("SELECT model FROM Avto WHERE id = %s", (id_avto,))
+        avto_model_podatki = cur.fetchone()
+        avto_model = avto_model_podatki[0] if avto_model_podatki else "Neznan model"
 
-    # Pridobi podatke o uporabnikovem avtu
-    cur.execute("SELECT id_avto FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
-    avto_podatki = cur.fetchone()
+        # Vstavi prijavo v TrenutnaDirka
+        cur.execute("""
+            INSERT INTO TrenutnaDirka (id_dirke, uporabnisko_ime, id_avto, model_avta)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (id_dirke, uporabnisko_ime) DO NOTHING
+        """, (id_dirke, uporabnik, id_avto, avto_model))
 
-    if not avto_podatki or avto_podatki[0] is None:
-        print("\n⚠️ Nimaš izbranega avta! Najprej izberi avto v svojem profilu.")
-        return False
+        conn.commit()
+        return f"✅ Uspešno si se prijavil na dirko ID: {id_dirke} z avtom {avto_model}!"
+    except Exception as e:
+        return f"⚠️ Napaka pri prijavi: {e}"
+    finally:
+        cur.close()
+        conn.close()
 
-    id_avto = avto_podatki[0]
-
-    # Pridobi model avta
-    cur.execute("SELECT model FROM Avto WHERE id = %s", (id_avto,))
-    avto_model_podatki = cur.fetchone()
-    avto_model = avto_model_podatki[0] if avto_model_podatki else "Neznan model"
-
-    # Vstavi prijavo v TrenutnaDirka, če še ni prijavljen
-    cur.execute("""
-        INSERT INTO TrenutnaDirka (id_dirke, uporabnisko_ime, id_avto, model_avta)
-        VALUES (%s, %s, %s, %s)
-        ON CONFLICT (id_dirke, uporabnisko_ime) DO NOTHING
-    """, (izbrani_id, uporabnik, id_avto, avto_model))
-
-    conn.commit()
-    print(f"\n✅ Uspešno si se prijavil na dirko ID: {izbrani_id} z avtom {avto_model}!")
-    return True
 
 
 def pridobi_profil(uporabnik):

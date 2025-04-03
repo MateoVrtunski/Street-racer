@@ -1,6 +1,6 @@
 from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
 import os
-from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil
+from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko
 from dostop import ustvari_povezavo
 from beaker.middleware import SessionMiddleware
 from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina
@@ -231,6 +231,27 @@ def posodobi_geslo():
             </script>
         '''
 
+@app.route('/prijava_na_dirko.html')
+def prijava_dirka():
+
+    trenutne, koncane = prikazi_trenutno_dirko()  # Dobimo podatke
+    return template('prijava_na_dirko', trenutne=trenutne, koncane = koncane)
+
+@app.route('/prijava_dirka', method="POST")
+def obdelaj_prijavo_dirke():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    
+    id_dirke = request.forms.get("id_dirke")
+
+    rezultat = prijavi_na_dirko(username, id_dirke)
+
+    return f'''
+        <script>
+            alert("{rezultat}");
+            window.location.href = "/prijava_na_dirko.html";
+        </script>
+    '''
 
     
 app = SessionMiddleware(app, session_opts)

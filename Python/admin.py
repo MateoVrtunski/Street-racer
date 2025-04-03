@@ -45,18 +45,19 @@ def dodaj_admina(cur, conn):
 
 def prikazi_trenutno_dirko():
     conn, cur = ustvari_povezavo()
-    # Poizvedba za vse dirke s številom prijavljenih
+    
     try:
+        # Poizvedba za vse dirke s številom prijavljenih
         cur.execute("""
-            SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) 
+            SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) AS prijavljeni
             FROM Dirka d
             LEFT JOIN TrenutnaDirka td ON d.id = td.id_dirke
-            GROUP BY d.id, d.datum, d.ime_dirkalisca
+            GROUP BY d.id, d.datum, d.vreme, d.ime_dirkalisca
             ORDER BY d.id
         """)
         vse_dirke = cur.fetchall()
 
-        # Pridobi ID-jev dirk, ki so že končane (vsaj 10 vnosov v RezultatDirke s točkami)
+        # Pridobi ID dirk, ki so že končane (vsaj 10 vnosov v RezultatDirke s točkami)
         cur.execute("""
             SELECT id_dirke
             FROM RezultatDirke
@@ -70,25 +71,25 @@ def prikazi_trenutno_dirko():
         koncane_dirke = []
 
         for dirka in vse_dirke:
+            dirka_podatki = {
+                "id": dirka[0],
+                "datum": dirka[1],
+                "vreme": dirka[2],
+                "dirkalisce": dirka[3],
+                "prijavljeni": dirka[4],  # Število prijavljenih
+                "max_prijav": 20  # Omejitev na 20 prijav
+            }
+
             if dirka[0] in koncane_dirke_ids:
-                koncane_dirke.append({
-                "id": dirka[0],
-                "datum": dirka[1],
-                "vreme": dirka[2],
-                "dirkalisce": dirka[3]
-            })
+                koncane_dirke.append(dirka_podatki)
             else:
-                dirke.append({
-                "id": dirka[0],
-                "datum": dirka[1],
-                "vreme": dirka[2],
-                "dirkalisce": dirka[3]
-            })
+                dirke.append(dirka_podatki)
+
         return dirke, koncane_dirke
+
     finally:
         cur.close()
         conn.close()
-    
 
     
 
