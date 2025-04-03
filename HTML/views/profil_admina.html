@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>👤 Tvoj Profil</h1>
+
+        <table border="1">
+            <tr>
+                <th>Ime</th>
+                <td>{{ profil["ime"] }}</td>
+            </tr>
+            <tr>
+                <th>Priimek</th>
+                <td>{{ profil["priimek"] }}</td>
+            </tr>
+        </table>
+
+        <h2>🔒 Spremeni geslo</h2>
+        <form action="/spremeni_geslo_admina" method="POST">
+            <input type="password" name="novo_geslo" placeholder="Novo geslo" required>
+            <button type="submit">Spremeni geslo</button>
+        </form>
+
+        <br>
+        <a href="/meni_admina.html">
+            <button>🔙 Nazaj</button>
+        </a>
+    </div>
+</body>
+</html>

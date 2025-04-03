@@ -159,26 +159,42 @@ def doloci_rezultate(cur, conn):
         return
 
 
-def prikazi_profil_admin(cur, conn, admin):
-    cur.execute("SELECT ime, priimek FROM Boss WHERE uporabnisko_ime = %s", (admin,))
-    rezultat = cur.fetchone()
-    if rezultat:
-        ime, priimek = rezultat
+def pridobi_profil_admina(uporabnik):
+    """Vrne podatke o profilu uporabnika."""
+    conn, cur = ustvari_povezavo()
+    try:
+        # Pridobimo osnovne podatke uporabnika
+        cur.execute("SELECT ime, priimek FROM Boss WHERE uporabnisko_ime = %s", (uporabnik,))
+        rezultat = cur.fetchone()
 
-        print(f"\n👤 Profil: {ime} {priimek}")
+        if rezultat:
+            ime, priimek = rezultat
+            return {
+                "uporabnisko_ime": uporabnik,
+                "ime": ime,
+                "priimek": priimek
+            }
+        else:
+            return None  # Če uporabnik ne obstaja
+
+    finally:
+        cur.close()
+        conn.close()
+
+def spremeni_geslo_admina(uporabnik, novo_geslo):
+    """Posodobi geslo uporabnika."""
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("UPDATE Boss SET geslo = %s WHERE uporabnisko_ime = %s", (novo_geslo, uporabnik))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Napaka pri spreminjanju gesla: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
         
-        print("\n📌 Uredi profil:")
-        print("1️⃣ Spremeni geslo")
-        print("2️⃣ Nazaj")
-
-        izbira = input("\n🔢 Izberi možnost: ").strip()
-
-        if izbira == "1":
-            novo_geslo = input("🔒 Vnesi novo geslo: ").strip()
-            cur.execute("UPDATE Boss SET geslo = %s WHERE uporabnisko_ime = %s", (novo_geslo, admin))
-            conn.commit()
-            print("\n✅ Geslo uspešno spremenjeno!")
-
 def pridobi_rezultate_dirk():
     """Vrne seznam preteklih dirk z rezultati."""
     conn, cur = ustvari_povezavo()

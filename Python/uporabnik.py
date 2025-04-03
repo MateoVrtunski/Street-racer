@@ -160,50 +160,64 @@ def izberi_dirko(cur, conn, uporabnik):
     return True
 
 
-def prikazi_profil(cur, conn, uporabnik):
-    cur.execute("SELECT ime, priimek, tocke, id_avto FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
-    rezultat = cur.fetchone()
-    if rezultat:
-        ime, priimek, tocke, id_avto = rezultat
-        cur.execute("SELECT znamka, model FROM Avto WHERE id = %s", (id_avto,))
-        avto_podatki = cur.fetchone()
-        avto_ime = f"{avto_podatki[0]} {avto_podatki[1]}" if avto_podatki else "Ni izbran"
+def pridobi_profil(uporabnik):
+    """Vrne podatke o profilu uporabnika."""
+    conn, cur = ustvari_povezavo()
+    try:
+        # Pridobimo osnovne podatke uporabnika
+        cur.execute("SELECT ime, priimek, tocke, id_avto FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
+        rezultat = cur.fetchone()
 
-        print(f"\n👤 Profil: {ime} {priimek}")
-        print(f"🚗 Avto: {avto_ime}")
-        print(f"🏆 Točke: {tocke}")
+        if rezultat:
+            ime, priimek, tocke, id_avto = rezultat
 
-        print("\n📌 Uredi profil:")
-        print("1️⃣ Spremeni geslo")
-        print("2️⃣ Zamenjaj avto")
-        print("3️⃣ Nazaj")
+            # Pridobimo podatke o avtomobilu
+            cur.execute("SELECT znamka, model FROM Avto WHERE id = %s", (id_avto,))
+            avto_podatki = cur.fetchone()
+            avto_ime = f"{avto_podatki[0]} {avto_podatki[1]}" if avto_podatki else "Ni izbran"
 
-        izbira = input("\n🔢 Izberi možnost: ").strip()
+            return {
+                "uporabnisko_ime": uporabnik,
+                "ime": ime,
+                "priimek": priimek,
+                "tocke": tocke,
+                "avto": avto_ime
+            }
+        else:
+            return None  # Če uporabnik ne obstaja
 
-        if izbira == "1":
-            novo_geslo = input("🔒 Vnesi novo geslo: ").strip()
-            cur.execute("UPDATE Uporabnik SET geslo = %s WHERE uporabnisko_ime = %s", (novo_geslo, uporabnik))
-            conn.commit()
-            print("\n✅ Geslo uspešno spremenjeno!")
+    finally:
+        cur.close()
+        conn.close()
 
-        elif izbira == "2":
-            cur.execute("SELECT id, znamka, model FROM Avto")
-            avtomobili = cur.fetchall()
+def spremeni_geslo(uporabnik, novo_geslo):
+    """Posodobi geslo uporabnika."""
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("UPDATE Uporabnik SET geslo = %s WHERE uporabnisko_ime = %s", (novo_geslo, uporabnik))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Napaka pri spreminjanju gesla: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
-            print("\n🚗 Izberi nov avto:")
-            for avto in avtomobili:
-                print(f"{avto[0]}. {avto[1]} {avto[2]}")
 
-            while True:
-                nov_avto_id = input("\n🔢 Vnesi ID novega avta: ").strip()
-                cur.execute("SELECT * FROM Avto WHERE id = %s", (nov_avto_id,))
-                if cur.fetchone():
-                    cur.execute("UPDATE Uporabnik SET id_avto = %s WHERE uporabnisko_ime = %s", (nov_avto_id, uporabnik))
-                    conn.commit()
-                    print("\n✅ Avto uspešno posodobljen!")
-                    break
-                else:
-                    print("⚠️ Neveljaven ID avta. Poskusi znova.")
+def spremeni_avto(uporabnik, avto_id):
+    """Posodobi avto uporabnika."""
+    conn, cur = ustvari_povezavo()
+    try:
+        cur.execute("UPDATE Uporabnik SET id_avto = %s WHERE uporabnisko_ime = %s", (avto_id, uporabnik))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Napaka pri spreminjanju avta: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
 def odjava_dirke(cur, conn, uporabnik):
     # Prikaži dirke, kjer je uporabnik prijavljen in rezultati še niso vpisani

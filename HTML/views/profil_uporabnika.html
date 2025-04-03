@@ -4,15 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Tvoj Profil</h1>
-        <p>Izberite možnost:</p>
+        <h1>👤 Tvoj Profil</h1>
 
-        <a href="meni_uporabnika.html">
-            <button>Nazaj</button>
+        <table border="1">
+            <tr>
+                <th>Ime</th>
+                <td>{{ profil["ime"] }}</td>
+            </tr>
+            <tr>
+                <th>Priimek</th>
+                <td>{{ profil["priimek"] }}</td>
+            </tr>
+            <tr>
+                <th>Točke</th>
+                <td>{{ profil["tocke"] }}</td>
+            </tr>
+            <tr>
+                <th>Avto</th>
+                <td>{{ profil["avto"] }}</td>
+            </tr>
+        </table>
+
+        <h2>🔒 Spremeni geslo</h2>
+        <form action="/spremeni_geslo_uporabnika" method="POST">
+            <input type="password" name="novo_geslo" placeholder="Novo geslo" required>
+            <button type="submit">Spremeni geslo</button>
+        </form>
+
+        <h2>🚗 Zamenjaj avto</h2>
+        <form action="/spremeni_avto" method="POST">
+            <select name="avto">
+                % for avto in avtomobili:
+                    <option value="{{ avto[0] }}">{{ avto[1] }} {{ avto[2] }}</option>
+                % end
+            </select>
+            <button type="submit">Zamenjaj avto</button>
+        </form>
+
+        <br>
+        <a href="/meni_uporabnika.html">
+            <button>🔙 Nazaj</button>
         </a>
     </div>
 </body>

@@ -1,9 +1,9 @@
 from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
 import os
-from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte
+from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil
 from dostop import ustvari_povezavo
 from beaker.middleware import SessionMiddleware
-from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko
+from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina
 
 app = Bottle()
 
@@ -138,6 +138,98 @@ def rezultati_dirk_page():
     dirka_podatki = pridobi_rezultate_dirk()  # Dobimo podatke iz baze
     return template('rezultati_dirk', dirke=dirka_podatki)
 
+@app.route('/profil_uporabnika.html')
+def profil_uporabnika():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    if not username:
+        return redirect('/login_uporabnika.html')
+
+    profil_podatki = pridobi_profil(username)
+    avtomobili = dobimo_avte()
+
+    return template('profil_uporabnika', profil=profil_podatki, avtomobili=avtomobili)
+
+
+@app.route('/spremeni_geslo_uporabnika', method="POST")
+def posodobi_geslo():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+
+    novo_geslo = request.forms.get("novo_geslo")
+
+    if spremeni_geslo(username, novo_geslo):
+        return '''
+            <script>
+                alert("Geslo uspešno spremenjeno!");
+                window.location.href = "/profil_uporabnika.html";
+            </script>
+        '''
+    else:
+        return '''
+            <script>
+                alert("Napaka pri spreminjanju gesla!");
+                window.location.href = "/profil_uporabnika.html";
+            </script>
+        '''
+
+
+@app.route('/spremeni_avto', method="POST")
+def posodobi_avto():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    avto_id = request.forms.get("avto")
+
+    if spremeni_avto(username, avto_id):
+        return '''
+            <script>
+                alert("Avto uspešno spremenjen!");
+                window.location.href = "/profil_uporabnika.html";
+            </script>
+        '''
+    else:
+        return '''
+            <script>
+                alert("Napaka pri spreminjanju avta!");
+                window.location.href = "/profil_uporabnika.html";
+            </script>
+        '''
+
+
+@app.route('/profil_admina.html')
+def profil_uporabnika():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    if not username:
+        return redirect('/login_admina.html')
+
+    profil_podatki = pridobi_profil_admina(username)
+
+
+    return template('profil_admina', profil=profil_podatki)
+
+
+@app.route('/spremeni_geslo_admina', method="POST")
+def posodobi_geslo():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+
+    novo_geslo = request.forms.get("novo_geslo")
+
+    if spremeni_geslo_admina(username, novo_geslo):
+        return '''
+            <script>
+                alert("Geslo uspešno spremenjeno!");
+                window.location.href = "/profil_admina.html";
+            </script>
+        '''
+    else:
+        return '''
+            <script>
+                alert("Napaka pri spreminjanju gesla!");
+                window.location.href = "/profil_admina.html";
+            </script>
+        '''
 
 
     
