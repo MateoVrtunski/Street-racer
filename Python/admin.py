@@ -15,33 +15,40 @@ def prijava_admina(username, password):
         cur.close()
         conn.close()
 
-def dodaj_admina(cur, conn):
-    uporabnisko_ime = input("🔹 Vnesi uporabniško ime uporabnika, ki ga želiš dodati kot admina: ").strip()
+def dodaj_admina(uporabnisko_ime):
+    conn, cur = ustvari_povezavo()
+    try:
+        # Preverimo, ali uporabnik obstaja
+        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
+        uporabnik = cur.fetchone()
 
-    # Preverimo, ali uporabnik obstaja
-    cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
-    uporabnik = cur.fetchone()
+        # Preverimo, ali je že admin
+        cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
+        admin_ze_obstaja = cur.fetchone()
 
-    # Preverimo, ali je že admin
-    cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
-    admin_ze_obstaja = cur.fetchone()
+        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
+        nov_id = cur.fetchone()[0]
 
-    cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
-    nov_id = cur.fetchone()[0]
+        if not uporabnik:
+            return "⚠️ Uporabnik s tem imenom ne obstaja."
+        elif admin_ze_obstaja:
+            return "⚠️ Ta uporabnik je že admin."
+        else:
+            cur.execute(
+                "INSERT INTO Boss (id, uporabnisko_ime, geslo, ime, priimek) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                (nov_id, uporabnik[1], uporabnik[2], uporabnik[3], uporabnik[4])
+            )
+            cur.execute("DELETE FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
 
-    if not uporabnik:
-        print("⚠️ Uporabnik s tem imenom ne obstaja.")
-    elif admin_ze_obstaja:
-        print("⚠️ Ta uporabnik je že admin.")
-    else:
-        cur.execute(
-            "INSERT INTO Boss (id, uporabnisko_ime, geslo, ime, priimek) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (nov_id, uporabnik[1], uporabnik[2], uporabnik[3], uporabnik[4])
-        )
-        conn.commit()
-        print(f"✅ Uporabnik {uporabnisko_ime} je zdaj admin!")
-
+            conn.commit()
+            return f"✅ Uporabnik {uporabnisko_ime} je zdaj admin!"
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
 def prikazi_trenutno_dirko():
     conn, cur = ustvari_povezavo()
@@ -91,7 +98,41 @@ def prikazi_trenutno_dirko():
         cur.close()
         conn.close()
 
+
+def mozne_dirke():
+    conn, cur = ustvari_povezavo()
     
+    try:
+        # Poizvedba za vse dirke s številom prijavljenih
+        cur.execute("""
+            SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) AS prijavljeni
+            FROM Dirka d
+            LEFT JOIN TrenutnaDirka td ON d.id = td.id_dirke
+            WHERE d.id NOT IN (SELECT DISTINCT id_dirke FROM RezultatDirke)
+            GROUP BY d.id, d.datum, d.vreme, d.ime_dirkalisca
+            HAVING COUNT(td.uporabnisko_ime) >= 10
+            ORDER BY d.id
+        """)
+        vse_dirke = cur.fetchall()
+
+        dirke = []
+
+        for dirka in vse_dirke:
+            dirka_podatki = {
+                "id": dirka[0],
+                "datum": dirka[1],
+                "vreme": dirka[2],
+                "dirkalisce": dirka[3],
+                "prijavljeni": dirka[4],  # Število prijavljenih
+                "max_prijav": 20  # Omejitev na 20 prijav
+            }
+            dirke.append(dirka_podatki)
+            
+        return dirke
+
+    finally:
+        cur.close()
+        conn.close()
 
 
 def doloci_rezultate(cur, conn):
@@ -261,37 +302,4 @@ def poglej_championship():
         conn.close()
 
 
-def admin_menu(cur, conn):
-    admin = prijava_admin(cur)
-    if not admin:
-        return
 
-    while True:
-        print("\n--- ADMIN MENU ---")
-        print("1️⃣ Profil")
-        print("2️⃣ Dodaj novega admina")
-        print("3️⃣ Preglej trenutno dirko")
-        print("4️⃣ Določi rezultate dirke")
-        print("5️⃣ Poglej rezultate preteklih dirk")
-        print("6️⃣ Poglej Championship")
-        print("7️⃣ Izhod")
-
-        izbira = input("Izberi možnost: ").strip()
-
-        if izbira == "1":
-            prikazi_profil_admin(cur,conn,admin)
-        elif izbira == "2":
-            dodaj_admina(cur, conn)
-        elif izbira == "3":
-            prikazi_trenutno_dirko(cur)
-        elif izbira == "4":
-            doloci_rezultate(cur, conn)
-        elif izbira == "5":
-            prikazi_rezultate_dirke(cur)
-        elif izbira == "6":
-            poglej_championship(cur)
-        elif izbira == "7":
-            print("\n👋 Izhod iz admin panela.")
-            break
-        else:
-            print("\n⚠️ Napačna izbira, poskusi znova.")

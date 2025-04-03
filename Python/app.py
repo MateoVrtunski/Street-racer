@@ -1,9 +1,9 @@
 from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
 import os
-from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke
+from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
 from dostop import ustvari_povezavo
 from beaker.middleware import SessionMiddleware
-from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina
+from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke
 
 app = Bottle()
 
@@ -125,18 +125,27 @@ def meni_uporabnika():
 
 @app.route('/championship.html')
 def championship_page():
+    session = request.environ['beaker.session']
+    username = session.get('username')
+    back_link = kdojekdo(username)
     championship_data = poglej_championship()  # Dobimo podatke
-    return template('championship', championship=championship_data)
+    return template('championship', championship=championship_data, back_link=back_link)
 
 @app.route('/poglej_prijave.html')
 def poglej_dirke():
+    session = request.environ['beaker.session']
+    username = session.get('username')
+    back_link = kdojekdo(username)
     trenutne, koncane = prikazi_trenutno_dirko()  # Dobimo podatke
-    return template('poglej_prijave', trenutne=trenutne, koncane = koncane)
+    return template('poglej_prijave', trenutne=trenutne, koncane = koncane, back_link=back_link)
 
 @app.route('/rezultati_dirk.html')
 def rezultati_dirk_page():
+    session = request.environ['beaker.session']
+    username = session.get('username')
+    back_link = kdojekdo(username)
     dirka_podatki = pridobi_rezultate_dirk()  # Dobimo podatke iz baze
-    return template('rezultati_dirk', dirke=dirka_podatki)
+    return template('rezultati_dirk', dirke=dirka_podatki, back_link=back_link)
 
 @app.route('/profil_uporabnika.html')
 def profil_uporabnika():
@@ -275,6 +284,58 @@ def obdelaj_odjavo_dirke():
             window.location.href = "/odjava_na_dirko.html";
         </script>
     '''
+
+@app.route('/dodaj_admina', method="POST")
+def dodaj():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Uporabnik')
+    
+    admin = request.forms.get("username")
+
+    rezultat = dodaj_admina(admin)
+
+    return f'''
+        <script>
+            alert("{rezultat}");
+            window.location.href = "/dodaj_admina.html";
+        </script>
+    '''
+
+@app.route('/doloci_rezultate.html')
+def doloci():
+    dirke = mozne_dirke()  # Dobimo podatke
+    return template('doloci_rezultate', dirke=dirke)
+
+@app.route('/izberi_dirko', method="POST")
+def izberi():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Admin')
+    dirka = request.forms.get("dirka")
+
+    session['dirka'] = dirka # Shrani uporabnika v sejo
+    session.save()
+
+    return redirect('/shrani_rezultate.html')
+
+
+@app.route('/shrani_rezultate.html')
+def prijava_dirka():
+    session = request.environ['beaker.session']
+    dirke = session.get('dirka')  # Dobimo podatke
+    return template('shrani_rezultate', dirke=dirke)
+
+@app.route('/shrani_dirko', method="POST")
+def obdelaj_prijavo_dirke():
+    session = request.environ['beaker.session']
+    username = session.get('username', 'Admin')
+
+    dirka = request.forms.get("dirka")
+    
+    
+
+
+
+    
     
 app = SessionMiddleware(app, session_opts)
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prijava na dirko</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script defer src="/static/script.js"></script> 
+    <style>
+    .klikabilna-vrstica.izbrana {
+        background-color: #d1e7ff;  /* Svetlo modra */
+        font-weight: bold;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Izberi dirko</h1>
+
+        % if not dirke:
+            <p>🚫 Trenutno ni primernih dirk.</p>
+        % else:
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ime dirkališča</th>
+                        <th>Datum</th>
+                        <th>Vreme</th>
+                        <th>Prijavljeni</th>
+                    </tr>
+                </thead>
+            <tbody>
+                % for dirka in dirke:
+                    <tr class="klikabilna-vrstica" data-id="{{ dirka['id'] }}">
+                        <td>{{ dirka['dirkalisce'] }}</td>
+                        <td>{{ dirka['datum'] }}</td>
+                        <td>{{ dirka['vreme'] }}</td>
+                        <td>{{ dirka['prijavljeni'] }}/20</td>
+                    </tr>
+                % end
+            </tbody>
+            </table>
+            
+        % end     
+            
+
+        <form action="/izberi_dirko" method="POST">
+            <input type="hidden" id="izbrana_dirka" name="dirka">
+            <button type="submit">Potrdi izbiro</button>
+        </form>
+        
+
+        <br>
+        <a href="/meni_admina.html">
+            <button>🔙 Nazaj</button>
+        </a>
+    </div>
+</body>
+</html>

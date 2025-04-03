@@ -76,22 +76,6 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
         conn.close()
 
 
-def prikazi_meni():
-    print("\n📌 GLAVNI MENI:")
-    print("1️⃣ Prijava")
-    print("2️⃣ Registracija")
-
-
-def prikazi_meni_uporabnika():
-    print("\n📌 MOŽNOSTI:")
-    print("1️⃣ Rezultati dirk")
-    print("2️⃣ Poglej Championship")
-    print("3️⃣ Prijava na dirko")
-    print("4️⃣ Odjava na dirko")
-    print("5️⃣ Moj profil")
-    print("6️⃣ Odjava")
-
-
 
 def prijavi_na_dirko(uporabnik, id_dirke):
     """Prijavi uporabnika na dirko, če izpolnjuje pogoje."""
@@ -272,57 +256,12 @@ def odjava_dirke(uporabnik, id_dirke):
         cur.close()
         conn.close()
 
-
-def glavna():
+def kdojekdo(username):
     conn, cur = ustvari_povezavo()
-
-    while True:
-        print("\n🔹 Izberi način prijave:")
-        print("1️⃣ Uporabnik")
-        print("2️⃣ Admin")
-        print("3️⃣ Izhod")
-        izbira = input("\n🔢 Izberi možnost: ").strip()
-
-        if izbira == "1":
-            while True:
-                prikazi_meni()
-                izbira = input("\n🔢 Izberi možnost: ").strip()
-                if izbira == "1":
-                    uporabnik = prijava_uporabnika(cur)
-                elif izbira == "2":
-                    uporabnik = registracija_uporabnika(cur, conn)
-                else:
-                    print("⚠️ Neveljavna izbira. Poskusi znova.")
-                    continue
-
-                while True:
-                    prikazi_meni_uporabnika()
-                    izbira = input("\n🔢 Izberi možnost: ").strip()
-                    if izbira == "1":
-                        admin.prikazi_rezultate_dirke(cur)
-                    elif izbira == "2":
-                        admin.poglej_championship(cur)
-                    elif izbira == "3":
-                        izberi_dirko(cur, conn, uporabnik)
-                    elif izbira == "4":
-                        odjava_dirke(cur, conn, uporabnik)
-                    elif izbira == "5":
-                        prikazi_profil(cur, conn, uporabnik)
-                    elif izbira == "6":
-                        print("\n👋 Odjava...")
-                        break
-                    else:
-                        print("⚠️ Neveljavna izbira. Poskusi znova.")
-                break
-
-        elif izbira == "2":
-            admin.admin_menu(cur, conn)
-
-        elif izbira == "3":
-            print("\n👋 Izhod iz programa...")
-            break
-
-        else:
-            print("⚠️ Neveljavna izbira. Poskusi znova.")
-
+    try:
+        cur.execute("SELECT 1 FROM Boss WHERE uporabnisko_ime = %s", (username,))
+        return '/meni_admina.html' if cur.fetchone() else '/meni_uporabnika.html'
+    finally:
+        cur.close()
+        conn.close()
 
