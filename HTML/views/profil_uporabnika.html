@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>👤 Tvoj Profil</h1>
-
-        <table border="1">
+        <h1>Tvoj profil</h1>
+    
+        <!-- PROFIL INFO -->
+        <table>
             <tr>
                 <th>Ime</th>
                 <td>{{ profil["ime"] }}</td>
@@ -28,41 +29,41 @@
                 <td>{{ profil["avto"] }}</td>
             </tr>
         </table>
-
-        <div class="container">
-            <h2>Trenutne prijave na dirko</h2>
     
-            % if moje:
-            <table border="1">
-                <tr>
-                    <th>ID</th>
-                    <th>Datum</th>
-                    <th>Napovedano vreme</th>
-                    <th>Dirkališče</th>
-                    <th>Prijavljeni</th>
-                </tr>
-                % for dirka in moje:
-                <tr>
-                    <td>{{ dirka["id"] }}</td>
-                    <td>{{ dirka["datum"] }}</td>
-                    <td>{{ dirka["vreme"] }}</td>
-                    <td>{{ dirka["dirkalisce"] }}</td>
-                    <td>{{ dirka["prijavljeni"] }}/20</td>
-                </tr>
-                % end
-            </table>
-            % else:
-                <p>⚠️ Niste prijavljeni na nobeno dirko.</p>
+        <!-- AKTIVNE DIRKE -->
+        <h2>📅 Trenutne prijave na dirko</h2>
+    
+        % if moje:
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Datum</th>
+                <th>Napovedano vreme</th>
+                <th>Dirkališče</th>
+                <th>Prijavljeni</th>
+            </tr>
+            % for dirka in moje:
+            <tr>
+                <td>{{ dirka["id"] }}</td>
+                <td>{{ dirka["datum"] }}</td>
+                <td>{{ dirka["vreme"] }}</td>
+                <td>{{ dirka["dirkalisce"] }}</td>
+                <td>{{ dirka["prijavljeni"] }}/20</td>
+            </tr>
             % end
+        </table>
+        % else:
+            <p>⚠️ Niste prijavljeni na nobeno dirko.</p>
+        % end
     
-        </div>
-
+        <!-- GESLO -->
         <h2>🔒 Spremeni geslo</h2>
         <form action="/spremeni_geslo_uporabnika" method="POST">
             <input type="password" name="novo_geslo" placeholder="Novo geslo" required>
             <button type="submit">Spremeni geslo</button>
         </form>
-
+    
+        <!-- AVTO -->
         <h2>🚗 Zamenjaj avto</h2>
         <form action="/spremeni_avto" method="POST">
             <select name="avto">
@@ -72,11 +73,12 @@
             </select>
             <button type="submit">Zamenjaj avto</button>
         </form>
-
-        <br>
+    
+        <!-- NAZAJ -->
         <a href="/meni_uporabnika.html">
-            <button>🔙 Nazaj</button>
+            <button class="gray-btn">Nazaj</button>
         </a>
     </div>
+    
 </body>
 </html>
