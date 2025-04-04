@@ -134,59 +134,71 @@ def mozne_dirke():
         cur.close()
         conn.close()
 
-
-def doloci_rezultate(cur, conn):
-    dirke = prikazi_trenutno_dirko(cur)
-
-    while True:
-        id_dirke = input("\n🔢 Vnesi ID dirke za določanje rezultatov (ali 0 za nazaj): ").strip()
-        if id_dirke == "0":
-            print("🔙 Vračam te nazaj v meni.")
-            return
-
+def prijavljeni_na_dirko(id_dirke):
+    conn, cur = ustvari_povezavo()
+    try:
+        # Preveri, če dirka obstaja
         cur.execute("SELECT * FROM Dirka WHERE id = %s", (id_dirke,))
         if not cur.fetchone():
-            print("\n⚠️ Neveljaven ID dirke. Poskusi znova.")
-            continue
+            return "⚠️ Neveljaven ID dirke."
 
-        cur.execute("""
-            SELECT COUNT(*) FROM RezultatDirke 
-            WHERE id_dirke = %s AND tocke > 0
-        """, (id_dirke,))
+        # Preveri, če je že zaključena
+        cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s AND tocke > 0", (id_dirke,))
         if cur.fetchone()[0] >= 10:
-            print("\n❌ Ta dirka je že zaključena! Ne moreš več vnesti rezultatov.")
-            continue
+            return "❌ Ta dirka je že zaključena!"
 
-        cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s ORDER BY uporabnisko_ime", (id_dirke,))
-        prijavljeni = [uporabnik[0] for uporabnik in cur.fetchall()]
+        # Preveri število prijavljenih
+        cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
+        prijavljeni = [row[0] for row in cur.fetchall()]
 
         if not prijavljeni:
-            print("\n⚠️ Ni prijavljenih uporabnikov za to dirko.")
-            return
-
+            return "⚠️ Ni prijavljenih uporabnikov za to dirko."
         if len(prijavljeni) < 10:
-            print("\n⚠️ Premalo tekmovalcev za točkovanje!")
-            return
+            return "⚠️ Premalo tekmovalcev za točkovanje!"
+        
+        cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
+        prijavljeni = cur.fetchall()
+        return prijavljeni
+    
+    except Exception as e:
+        print(f"Napaka pri spreminjanju gesla: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
+
+def doloci_rezultate(id_dirke, rezultat_seznam):
+    conn, cur = ustvari_povezavo()
+    try:
+        # Preveri, če dirka obstaja
+        cur.execute("SELECT * FROM Dirka WHERE id = %s", (id_dirke,))
+        if not cur.fetchone():
+            return "⚠️ Neveljaven ID dirke."
+
+        # Preveri, če je že zaključena
+        cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s AND tocke > 0", (id_dirke,))
+        if cur.fetchone()[0] >= 10:
+            return "❌ Ta dirka je že zaključena!"
+
+        # Preveri število prijavljenih
+        cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
+        prijavljeni = [row[0] for row in cur.fetchall()]
+
+        if not prijavljeni:
+            return "⚠️ Ni prijavljenih uporabnikov za to dirko."
+        if len(prijavljeni) < 10:
+            return "⚠️ Premalo tekmovalcev za točkovanje!"
+        
+        cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
+        prijavljeni = [row[0] for row in cur.fetchall()]
+        # F1 točke
         tocke_f1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] + [0] * (len(prijavljeni) - 10)
-        rezultati = []
 
-        print('Tekmovali so:')
-        for uporabnik in enumerate(prijavljeni, start=1):
-            print(f"{uporabnik}")
-
-        print("\n🏆 Vpiši rezultate (od 1. mesta naprej):")
-        i = 0
-        while i < min(20, len(prijavljeni)):
-            uporabnik = input(f"{i+1}. mesto: ").strip()
+        for i, uporabnik in enumerate(rezultat_seznam):
             if uporabnik not in prijavljeni:
-                print("\n⚠️ Napačno uporabniško ime. Poskusi znova.")
-                continue
+                return f"⚠️ Uporabnik '{uporabnik}' ni prijavljen na dirko!"
 
-            rezultati.append(uporabnik)
-            i += 1
-
-        for i, uporabnik in enumerate(rezultati):
             cur.execute("""
                 INSERT INTO RezultatDirke (id_dirke, uporabnisko_ime, uvrstitev, tocke)
                 VALUES (%s, %s, %s, %s)
@@ -197,8 +209,14 @@ def doloci_rezultate(cur, conn):
             """, (tocke_f1[i], uporabnik))
 
         conn.commit()
-        print("\n✅ Rezultati uspešno shranjeni!")
-        return
+        return "✅ Rezultati uspešno shranjeni!"
+    
+    except Exception as e:
+        print(f"Napaka pri spreminjanju gesla: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.close()
 
 
 def pridobi_profil_admina(uporabnik):

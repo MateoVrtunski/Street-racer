@@ -3,7 +3,7 @@ import os
 from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
 from dostop import ustvari_povezavo
 from beaker.middleware import SessionMiddleware
-from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke
+from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke, doloci_rezultate, prijavljeni_na_dirko
 
 app = Bottle()
 
@@ -322,14 +322,27 @@ def izberi():
 def prijava_dirka():
     session = request.environ['beaker.session']
     dirke = session.get('dirka')  # Dobimo podatke
-    return template('shrani_rezultate', dirke=dirke)
+    id_dirke = dirke[0]
+    prijavljeni = prijavljeni_na_dirko(id_dirke)
 
-@app.route('/shrani_dirko', method="POST")
-def obdelaj_prijavo_dirke():
+    return template('shrani_rezultate', dirke=dirke, prijavljeni = prijavljeni)
+
+@app.route('/shrani_rezultate', method="POST")
+def shrani_rezultate():
     session = request.environ['beaker.session']
-    username = session.get('username', 'Admin')
+    dirke = session.get('dirka')
+    id_dirke = dirke[0]
 
-    dirka = request.forms.get("dirka")
+    rezultat_seznam = request.forms.getall("rezultat[]")  # array iz forme
+
+    rezultat = doloci_rezultate(id_dirke, rezultat_seznam)
+    
+    return f'''
+        <script>
+            alert("{rezultat}");
+            window.location.href = "/meni_admina.html";
+        </script>
+    '''
     
     
 
