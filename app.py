@@ -30,13 +30,13 @@ def serve_template(filename):
     return template(filename, error=None, success=None)
 
 # 🏠 **Glavna stran**
-@app.route('/index.html')
+@app.route('/')
 def index():
     return template('index')
 
 
 @app.route('/login_admina', method='POST')
-def login():
+def logina():
     session = request.environ['beaker.session']
     username = request.forms.get('username').strip()
     password = request.forms.get('password').strip()
@@ -55,7 +55,7 @@ def login():
 
 # 🔑 **Prijava uporabnika**
 @app.route('/login_uporabnika', method='POST')
-def login():
+def loginu():
     session = request.environ['beaker.session']
     username = request.forms.get('username').strip()
     password = request.forms.get('password').strip()
@@ -121,7 +121,7 @@ def meni_uporabnika():
     return template('meni_uporabnika', username=username)
 
 @app.route('/meni_admina.html')
-def meni_uporabnika():
+def meni_admina():
     session = request.environ['beaker.session']
     username = session.get('username', 'Admin')  # Privzeto 'Uporabnik', če ni shranjenega imena
     return template('meni_admina', username=username)
@@ -165,7 +165,7 @@ def profil_uporabnika():
 
 
 @app.route('/spremeni_geslo_uporabnika', method="POST")
-def posodobi_geslo():
+def posodobi_geslou():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
 
@@ -223,7 +223,7 @@ def profil_uporabnika():
 
 
 @app.route('/spremeni_geslo_admina', method="POST")
-def posodobi_geslo():
+def posodobi_gesloa():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
 
