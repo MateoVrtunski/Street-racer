@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dodaj admina</title>
+    <title>Prijava Admina</title>
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="container">
-        <h2>Dodaj admina</h2>
-        <form action="/dodaj_admina" method="post">
+        <h2>Prijava Admina</h2>
+        <form action="/login_admina" method="post">
             <label for="username">Uporabniško ime:</label>
             <input type="text" id="username" name="username" required>
 
-            <button type="submit">Potrdi</button>
+            <label for="password">Geslo:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Prijava</button>
         </form>
 
-        <a href="/meni_admina.html">
+        <a href="/index.html">
             <button style="background-color: gray;">Nazaj</button>
         </a>
     </div>
