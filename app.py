@@ -7,6 +7,9 @@ from Python.admin import poglej_championship, pridobi_rezultate_dirk, prijava_ad
 
 app = Bottle()
 
+SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
+RELOADER = os.environ.get('BOTTLE_RELOADER', True)
+
 # Nastavimo pravilno pot do `views` mapo
 TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "HTML/views"))
 session_opts = {
@@ -354,4 +357,4 @@ app = SessionMiddleware(app, session_opts)
 
 # 🚀 **Zagon Bottle strežnika**
 if __name__ == "__main__":
-    run(app, host='localhost', port=8080, debug=True, reloader=True)
+    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
