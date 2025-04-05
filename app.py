@@ -210,7 +210,7 @@ def posodobi_avto():
 
 
 @app.route('/profil_admina.html')
-def profil_uporabnika():
+def profil_adminaa():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
     if not username:
@@ -312,7 +312,6 @@ def doloci():
 @app.route('/izberi_dirko', method="POST")
 def izberi():
     session = request.environ['beaker.session']
-    username = session.get('username', 'Admin')
     dirka = request.forms.get("dirka")
 
     session['dirka'] = dirka # Shrani uporabnika v sejo

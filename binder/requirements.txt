@@ -1,6 +1,5 @@
 bottle
 psycopg2
 psycopg2-binary
-bottle
 bcrypt
 jupyter-server-proxy
