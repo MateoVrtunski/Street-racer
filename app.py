@@ -30,7 +30,7 @@ def serve_template(filename):
     return template(filename, error=None, success=None)
 
 # 🏠 **Glavna stran**
-@app.route('/')
+@app.route('/index.html')
 def index():
     return template('index')
 
