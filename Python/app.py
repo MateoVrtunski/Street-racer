@@ -1,4 +1,4 @@
-from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
+from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template, default_app
 import os
 from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
 from dostop import ustvari_povezavo
@@ -353,5 +353,7 @@ def shrani_rezultate():
 app = SessionMiddleware(app, session_opts)
 
 # 🚀 **Zagon Bottle strežnika**
-if __name__ == '__main__':
-    run(app, host='localhost', port=8080, debug=True, reloader=True)
+if __name__ == "__main__":
+    run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+else:
+    application = default_app()
