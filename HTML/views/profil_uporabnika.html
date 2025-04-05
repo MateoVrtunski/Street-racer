@@ -67,8 +67,10 @@
         <h2>Zamenjaj avto</h2>
         <form action="/spremeni_avto" method="POST">
             <select name="avto">
-                % for avto in avtomobili:
-                    <option value="{{ avto[0] }}">{{ avto[1] }} {{ avto[2] }}</option>
+                % for car in avtomobili:
+                <option value="{{car[0]}}">
+                    {{car[1]}} {{car[2]}} ({{car[3]}} KM, max {{car[4]}} km/h)
+                </option>
                 % end
             </select>
             <button type="submit">Zamenjaj avto</button>
