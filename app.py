@@ -353,4 +353,4 @@ app = SessionMiddleware(app, session_opts)
 
 # 🚀 **Zagon Bottle strežnika**
 if __name__ == "__main__":
-    run(app, host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+    run(app, host='0.0.0.0', port=SERVER_PORT, reloader=RELOADER, debug=True)
