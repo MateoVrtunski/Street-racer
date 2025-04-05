@@ -1,3 +1,3 @@
 #!/bin/bash
 jupyter server extension enable --sys-prefix jupyter_server_proxy
-chmod +x start
+chmod +x binder/start
