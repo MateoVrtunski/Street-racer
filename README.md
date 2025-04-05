@@ -5,6 +5,6 @@ Administrator ob koncu dirke vpiše rezultate in avtomatsko se rezultati in cham
 Tukaj je okvirni ER diagram:
 ![alt text](https://github.com/MateoVrtunski/Street-racer/blob/main/Street_racer.drawio.png?raw=true)
 
-Tukaj pa zagon aplikacije: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mateovrtunski/street-racer/HEAD?urlpath=lab).
-proxy%2F8080
+Tukaj pa zagon aplikacije: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mateovrtunski/street-racer/HEAD?urlpath=proxy%2F8080).
+
 
