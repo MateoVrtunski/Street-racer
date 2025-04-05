@@ -1,9 +1,9 @@
 from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template, default_app
 import os
-from uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
-from dostop import ustvari_povezavo
+import Python
+from Python.uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
 from beaker.middleware import SessionMiddleware
-from admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke, doloci_rezultate, prijavljeni_na_dirko
+from Python.admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke, doloci_rezultate, prijavljeni_na_dirko
 
 app = Bottle()
 
@@ -354,6 +354,6 @@ app = SessionMiddleware(app, session_opts)
 
 # 🚀 **Zagon Bottle strežnika**
 if __name__ == "__main__":
-    run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    run(app, host='localhost', port=8080, debug=True, reloader=True)
 else:
     application = default_app()

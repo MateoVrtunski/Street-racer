@@ -1,5 +1,5 @@
 import psycopg2
-from dostop import ustvari_povezavo
+from Python.dostop import ustvari_povezavo
 
 def prijava_admina(username, password):
 

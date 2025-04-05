@@ -1,7 +1,5 @@
-from dostop import ustvari_povezavo
-import admin
+from Python.dostop import ustvari_povezavo
 import psycopg2
-from bottle import template
 
 
 db = 'sem2024_mateov'
