@@ -69,7 +69,7 @@ def loginu():
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = '/login_uporabnika.html';
+                window.location.href = 'login_uporabnika.html';
             </script>
         '''
     
