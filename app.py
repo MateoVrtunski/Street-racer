@@ -7,7 +7,7 @@ from Python.admin import poglej_championship, pridobi_rezultate_dirk, prijava_ad
 
 app = Bottle()
 
-SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
+SERVER_PORT = int(os.environ.get('BOTTLE_PORT', 8080))
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 
 # Nastavimo pravilno pot do `views` mapo
@@ -352,4 +352,4 @@ app = SessionMiddleware(app, session_opts)
 
 # 🚀 **Zagon Bottle strežnika**
 
-run(app, host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+run(app, host='0.0.0.0', port=SERVER_PORT, reloader=RELOADER, debug=True)
