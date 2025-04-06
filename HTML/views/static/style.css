@@ -9,7 +9,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #fff;
     background-color: #0a0a0a;
-    background-image: url('prva.jpg'); /* zamenjaj s svojo sliko */
+    background-image: url('/static/prva.jpg'); /* zamenjaj s svojo sliko */
     background-size: cover;
     background-position: center;
     position: relative;
