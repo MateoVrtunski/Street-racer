@@ -19,14 +19,15 @@ session_opts = {
 }
 
 # Serve static files (CSS, JS, images)
-@app.route('HTML/views/static/<filename:path>')
+@app.route('/static/<filename:path>')
 def serve_static(filename):
     return static_file(filename, root="HTML/views/static")
 
-# 🔥 **Pravilno serviranje HTML datotek z `template()`**
-@app.route('HTML/views/<filename>.html')
+# 🔥 **Pravilno serviranje HTML datotek z template()**
+@app.route('/<filename>.html')
 def serve_template(filename):
     return template(filename, error=None, success=None)
+
 
 # 🏠 **Glavna stran**
 @app.route('/')
