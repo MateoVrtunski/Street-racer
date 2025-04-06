@@ -40,11 +40,6 @@ def home():
     return static_file("index.html", root=VIEWS_DIR)
 
 
-# 🏠 **Glavna stran**
-@app.route('/')
-def index():
-    return template('index')
-
 
 @app.route('/login_admina', method='POST')
 def logina():
