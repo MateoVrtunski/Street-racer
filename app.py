@@ -64,12 +64,12 @@ def loginu():
     if prijava_uporabnika(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('meni_uporabnika.html')
+        return template('meni_uporabnika')
     else:
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = 'login_uporabnika.html';
+                window.location.href = 'login_uporabnika;
             </script>
         '''
     
