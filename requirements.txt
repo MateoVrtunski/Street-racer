@@ -1,4 +1,4 @@
 bottle
 psycopg2
 jupyter-server-proxy
-os
+beaker.middleware
