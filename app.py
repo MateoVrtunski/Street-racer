@@ -17,28 +17,23 @@ session_opts = {
     'session.auto': True,
     'session.data_dir': './data'
 }
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-VIEWS_DIR = os.path.join(BASE_DIR, "HTML", "views")
-STATIC_DIR = os.path.join(VIEWS_DIR, "static")
+TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "views"))
 
-# 🎯 Configure template lookup (if using template() for dynamic HTML)
-app.TEMPLATE_PATH.insert(0, VIEWS_DIR)
-
-# 📦 Serve static files (CSS, JS, images)
+# Serve static files (CSS, JS, images)
 @app.route('/static/<filename:path>')
 def serve_static(filename):
-    return static_file(filename, root=STATIC_DIR)
+    return static_file(filename, root="views/static")
 
-# 🏠 Serve HTML files (use static_file for raw HTML)
+# 🔥 **Pravilno serviranje HTML datotek z template()**
 @app.route('/<filename>.html')
-def serve_html(filename):
-    return static_file(f"{filename}.html", root=VIEWS_DIR)
+def serve_template(filename):
+    return template(filename, error=None, success=None)
 
-# 🏡 Homepage (serves index.html)
+
+# 🏠 **Glavna stran**
 @app.route('/')
-def home():
-    return static_file("index.html", root=VIEWS_DIR)
-
+def index():
+    return template('index')
 
 
 @app.route('/login_admina', method='POST')
