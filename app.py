@@ -10,23 +10,34 @@ SERVER_PORT = int(os.environ.get('BOTTLE_PORT', 8080))
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 
 # Nastavimo pravilno pot do `views` mapo
-TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "HTML/views"))
+
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': True,
     'session.auto': True,
     'session.data_dir': './data'
 }
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+VIEWS_DIR = os.path.join(BASE_DIR, "HTML", "views")
+STATIC_DIR = os.path.join(VIEWS_DIR, "static")
 
-# Serve static files (CSS, JS, images)
+# 🎯 Configure template lookup (if using template() for dynamic HTML)
+app.TEMPLATE_PATH.insert(0, VIEWS_DIR)
+
+# 📦 Serve static files (CSS, JS, images)
 @app.route('/static/<filename:path>')
 def serve_static(filename):
-    return static_file(filename, root="HTML/views/static")
+    return static_file(filename, root=STATIC_DIR)
 
-# 🔥 **Pravilno serviranje HTML datotek z template()**
+# 🏠 Serve HTML files (use static_file for raw HTML)
 @app.route('/<filename>.html')
-def serve_template(filename):
-    return template(filename, error=None, success=None)
+def serve_html(filename):
+    return static_file(f"{filename}.html", root=VIEWS_DIR)
+
+# 🏡 Homepage (serves index.html)
+@app.route('/')
+def home():
+    return static_file("index.html", root=VIEWS_DIR)
 
 
 # 🏠 **Glavna stran**
