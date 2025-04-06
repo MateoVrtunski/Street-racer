@@ -33,7 +33,7 @@ def serve_template(filename):
 # 🏠 **Glavna stran**
 @app.route('/')
 def index():
-    return template('index')
+    return redirect('8080/index.html')
 
 
 @app.route('/login_admina', method='POST')
@@ -69,7 +69,7 @@ def loginu():
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = '/login_uporabnika.html';
+                window.location.href = 'login_uporabnika.html';
             </script>
         '''
     
