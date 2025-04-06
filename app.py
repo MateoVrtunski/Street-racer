@@ -1,6 +1,5 @@
 from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
 import os
-import Python
 from Python.uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
 from beaker.middleware import SessionMiddleware
 from Python.admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke, doloci_rezultate, prijavljeni_na_dirko
