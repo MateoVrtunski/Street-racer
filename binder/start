@@ -3,4 +3,4 @@ export BOTTLE_PORT=8080
 export BOTTLE_RELOADER=1
 export BOTTLE_ROOT=${JUPYTERHUB_SERVICE_PREFIX}proxy/${BOTTLE_PORT}/
 export POSTGRES_PORT=443
-python app.py
+exec app.py
