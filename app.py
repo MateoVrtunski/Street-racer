@@ -79,7 +79,7 @@ def register_page():
     return template('register_uporabnika', cars=cars, error=None, success=None)
 
 # ✅ **Obdelava registracije**
-@app.route('/register', method="POST")
+@app.route('/register_uporabnika', method="POST")
 def process_register():
     session = request.environ['beaker.session']
     cars = dobimo_avte()
