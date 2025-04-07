@@ -19,6 +19,10 @@ session_opts = {
 }
 TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "views"))
 
+def get_base_url():
+    """Get Binder's proxy prefix (e.g., '/user/you-repo/proxy/8080')"""
+    return request.environ.get('SCRIPT_NAME', '')
+
 # Serve static files (CSS, JS, images)
 @app.route('/static/<filename:path>')
 def serve_static(filename):
@@ -45,12 +49,12 @@ def logina():
     if prijava_admina(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('meni_admina.html')
+        return redirect(f"{get_base_url()}/meni_admina.html")
     else:
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = '/login_admina.html';
+                window.location.href = 'login_admina.html';
             </script>
         '''
 
