@@ -33,7 +33,7 @@ def serve_template(filename):
 # 🏠 **Glavna stran**
 @app.route('/')
 def index():
-    return template('index')
+    return template('index2')
 
 
 @app.route('/login_admina', method='POST')
@@ -45,7 +45,7 @@ def logina():
     if prijava_admina(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('meni_admina.html')
+        return redirect('/meni_admina.html')
     else:
         return '''
             <script>
@@ -64,7 +64,7 @@ def loginu():
     if prijava_uporabnika(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return template('meni_uporabnika')
+        return redirect('/meni_uporabnika.html')
     else:
         return '''
             <script>

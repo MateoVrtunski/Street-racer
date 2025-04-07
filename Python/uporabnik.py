@@ -56,11 +56,20 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
         cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
         new_id = cur.fetchone()[0]
 
+        cur.execute("SELECT model FROM Avto WHERE id = %s", (avto_id,))
+        result = cur.fetchone()
+        
+        if not result:
+            print(f"Napaka: Avto z ID {avto_id} ne obstaja")
+            return False
+            
+        model_avta = result[0]
+        
         # Insert new user
         cur.execute("""
-            INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, tocke)
-            VALUES (%s, %s, %s, %s, %s, %s, 0)
-        """, (new_id, username, ime, priimek, password, avto_id))
+            INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, model_avta, tocke)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, 0)
+        """, (new_id, username, ime, priimek, password, avto_id, model_avta))
         
         conn.commit()  # THIS WAS MISSING - CRUCIAL!
         return 2
@@ -176,7 +185,15 @@ def spremeni_avto(uporabnik, avto_id):
     """Posodobi avto uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
-        cur.execute("UPDATE Uporabnik SET id_avto = %s WHERE uporabnisko_ime = %s", (avto_id, uporabnik))
+        cur.execute("SELECT model FROM Avto WHERE id = %s", (avto_id,))
+        result = cur.fetchone()
+        
+        if not result:
+            print(f"Napaka: Avto z ID {avto_id} ne obstaja")
+            return False
+            
+        model_avta = result[0]
+        cur.execute("UPDATE Uporabnik SET id_avto = %s, model_avta = %s WHERE uporabnisko_ime = %s", (avto_id, model_avta, uporabnik))
         conn.commit()
         return True
     except Exception as e:
