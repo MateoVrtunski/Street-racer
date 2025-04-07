@@ -73,7 +73,7 @@ def loginu():
             </script>
         '''
     
-@app.route('register_uporabnika')
+@app.route('register_uporabnika.html')
 def register_page():
     cars = dobimo_avte()  # Get cars from database
     return template('register_uporabnika', cars=cars, error=None, success=None)
