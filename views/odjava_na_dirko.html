@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odjava z dirke</title>
     <link rel="stylesheet" href="static/style.css">
-    <script defer src="/static/script.js"></script> 
+    <script defer src="static/script.js"></script> 
     <style>
     .klikabilna-vrstica.izbrana {
         background-color: #d1e7ff;  /* Svetlo modra */
@@ -44,7 +44,7 @@
         % end     
             
 
-        <form action="/odjava_dirka" method="POST">
+        <form action="odjava_dirka" method="POST">
             <input type="hidden" id="izbrana_dirka" name="id_dirke">
             <button type="submit">Potrdi odjavo z dirke</button>
         </form>

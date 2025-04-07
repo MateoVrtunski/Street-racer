@@ -10,7 +10,7 @@
     <div class="container"> 
     <h1>🏁 Določanje rezultatov za dirko ID: {{ dirke }}</h1>
 
-    <form id="rezultat-form" action="/shrani_rezultate" method="POST">
+    <form id="rezultat-form" action="shrani_rezultate" method="POST">
         <ul class="drag-list" id="tekmovalci">
             % for uporabnik in prijavljeni:
                 <li class="drag-item" draggable="true" data-username="{{ uporabnik[0] }}">
@@ -25,7 +25,7 @@
         <button type="submit">✅ Shrani rezultate</button>
     </form>
 
-    <a href="/meni_admina.html">
+    <a href="meni_admina.html">
         <button class="gray-btn">Nazaj</button>
     </a>
     </div>

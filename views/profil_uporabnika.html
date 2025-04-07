@@ -58,14 +58,14 @@
     
         <!-- GESLO -->
         <h2>🔒 Spremeni geslo</h2>
-        <form action="/spremeni_geslo_uporabnika" method="POST">
+        <form action="spremeni_geslo_uporabnika" method="POST">
             <input type="password" name="novo_geslo" placeholder="Novo geslo" required>
             <button type="submit">Spremeni geslo</button>
         </form>
     
         <!-- AVTO -->
         <h2>Zamenjaj avto</h2>
-        <form action="/spremeni_avto" method="POST">
+        <form action="spremeni_avto" method="POST">
             <select name="avto">
                 % for car in avtomobili:
                 <option value="{{car[0]}}">
