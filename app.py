@@ -64,7 +64,7 @@ def loginu():
     if prijava_uporabnika(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('/meni_uporabnika.html')
+        return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}meni_uporabnika.html")
     else:
         return '''
             <script>
