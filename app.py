@@ -50,7 +50,7 @@ def logina():
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = '/login_admina.html';
+                window.location.href = 'login_admina.html';
             </script>
         '''
 
@@ -95,7 +95,7 @@ def process_register():
         return '''
             <script>
                 alert('Uporabniško ime že obstaja!');
-                window.location.href = '/register_uporabnika.html';
+                window.location.href = 'register_uporabnika.html';
             </script>
         '''
     elif result == 2:
@@ -104,14 +104,14 @@ def process_register():
         return '''
             <script>
                 alert('Registracija uspešna!');
-                window.location.href = '/meni_uporabnika.html';
+                window.location.href = 'meni_uporabnika.html';
             </script>
         '''
     else:
         return '''
             <script>
                 alert('Napaka pri registraciji!');
-                window.location.href = '/register_uporabnika.html';
+                window.location.href = 'register_uporabnika.html';
             </script>
         '''
     
@@ -176,14 +176,14 @@ def posodobi_geslou():
         return '''
             <script>
                 alert("Geslo uspešno spremenjeno!");
-                window.location.href = "/profil_uporabnika.html";
+                window.location.href = "profil_uporabnika.html";
             </script>
         '''
     else:
         return '''
             <script>
                 alert("Napaka pri spreminjanju gesla!");
-                window.location.href = "/profil_uporabnika.html";
+                window.location.href = "profil_uporabnika.html";
             </script>
         '''
 
@@ -198,14 +198,14 @@ def posodobi_avto():
         return '''
             <script>
                 alert("Avto uspešno spremenjen!");
-                window.location.href = "/profil_uporabnika.html";
+                window.location.href = "profil_uporabnika.html";
             </script>
         '''
     else:
         return '''
             <script>
                 alert("Napaka pri spreminjanju avta!");
-                window.location.href = "/profil_uporabnika.html";
+                window.location.href = "profil_uporabnika.html";
             </script>
         '''
 
@@ -234,14 +234,14 @@ def posodobi_gesloa():
         return '''
             <script>
                 alert("Geslo uspešno spremenjeno!");
-                window.location.href = "/profil_admina.html";
+                window.location.href = "profil_admina.html";
             </script>
         '''
     else:
         return '''
             <script>
                 alert("Napaka pri spreminjanju gesla!");
-                window.location.href = "/profil_admina.html";
+                window.location.href = "profil_admina.html";
             </script>
         '''
 
@@ -262,7 +262,7 @@ def obdelaj_prijavo_dirke():
     return f'''
         <script>
             alert("{rezultat}");
-            window.location.href = "/prijava_na_dirko.html";
+            window.location.href = "prijava_na_dirko.html";
         </script>
     '''
 
@@ -285,7 +285,7 @@ def obdelaj_odjavo_dirke():
     return f'''
         <script>
             alert("{rezultat}");
-            window.location.href = "/odjava_na_dirko.html";
+            window.location.href = "odjava_na_dirko.html";
         </script>
     '''
 
@@ -301,7 +301,7 @@ def dodaj():
     return f'''
         <script>
             alert("{rezultat}");
-            window.location.href = "/dodaj_admina.html";
+            window.location.href = "dodaj_admina.html";
         </script>
     '''
 
@@ -343,7 +343,7 @@ def shrani_rezultate():
     return f'''
         <script>
             alert("{rezultat}");
-            window.location.href = "/meni_admina.html";
+            window.location.href = "meni_admina.html";
         </script>
     '''
     
