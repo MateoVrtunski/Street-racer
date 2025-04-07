@@ -69,7 +69,7 @@ def loginu():
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = 'login_uporabnika.html;
+                window.location.href = 'login_uporabnika.html';
             </script>
         '''
     
@@ -156,7 +156,7 @@ def profil_uporabnika():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
     if not username:
-        return redirect('login_uporabnika.html')
+        return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/login_uporabnika.html")
 
     profil_podatki = pridobi_profil(username)
     avtomobili = dobimo_avte()

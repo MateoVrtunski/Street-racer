@@ -276,7 +276,7 @@ def kdojekdo(username):
     conn, cur = ustvari_povezavo()
     try:
         cur.execute("SELECT 1 FROM Boss WHERE uporabnisko_ime = %s", (username,))
-        return '/meni_admina.html' if cur.fetchone() else '/meni_uporabnika.html'
+        return 'meni_admina.html' if cur.fetchone() else 'meni_uporabnika.html'
     finally:
         cur.close()
         conn.close()
