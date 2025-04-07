@@ -250,7 +250,7 @@ def prijava_dirka():
     trenutne, koncane = prikazi_trenutno_dirko()  # Dobimo podatke
     return template('prijava_na_dirko', trenutne=trenutne, koncane = koncane)
 
-@app.route('/prijava_dirka', method="POST")
+@app.route('/prijava_na_dirko', method="POST")
 def obdelaj_prijavo_dirke():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
