@@ -33,7 +33,7 @@ def serve_template(filename):
 # 🏠 **Glavna stran**
 @app.route('/')
 def index():
-    return template('index2')
+    return template('index')
 
 
 @app.route('/login_admina', method='POST')
