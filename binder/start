@@ -2,7 +2,11 @@
 export BOTTLE_PORT=8080
 export BOTTLE_RELOADER=1
 export BOTTLE_ROOT=${JUPYTERHUB_SERVICE_PREFIX}proxy/${BOTTLE_PORT}/
-export POSTGRES_PORT=443
+export POSTGRES_HOST="baza.fmf.uni-lj.si"
+export POSTGRES_USER="javnost"
+export POSTGRES_PASSWORD="javnogeslo"
+export POSTGRES_DB="sem2024_mateov"
+export POSTGRES_PORT=5432
 export BOTTLE_RUNTIME=app.py
 python ${BOTTLE_RUNTIME} &
 exec "$@"
