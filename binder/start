@@ -6,7 +6,7 @@ export POSTGRES_HOST="baza.fmf.uni-lj.si"
 export POSTGRES_USER="javnost"
 export POSTGRES_PASSWORD="javnogeslo"
 export POSTGRES_DB="sem2024_mateov"
-export POSTGRES_PORT=5432
+export POSTGRES_PORT=443
 export BOTTLE_RUNTIME=app.py
 python ${BOTTLE_RUNTIME} &
 exec "$@"
