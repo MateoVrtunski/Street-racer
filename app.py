@@ -55,7 +55,7 @@ def logina():
         '''
 
 # 🔑 **Prijava uporabnika**
-@app.route('login_uporabnik', method='POST')
+@app.route('/login_uporabnika', method='POST')
 def loginu():
     session = request.environ['beaker.session']
     username = request.forms.get('username').strip()
@@ -69,11 +69,11 @@ def loginu():
         return '''
             <script>
                 alert('Napačno uporabniško ime ali geslo!');
-                window.location.href = '/login_uporabnika.html;
+                window.location.href = 'login_uporabnika.html;
             </script>
         '''
     
-@app.route('/register_uporabnika.html')
+@app.route('register_uporabnika')
 def register_page():
     cars = dobimo_avte()  # Get cars from database
     return template('register_uporabnika', cars=cars, error=None, success=None)
