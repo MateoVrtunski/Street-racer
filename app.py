@@ -45,7 +45,7 @@ def logina():
     if prijava_admina(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('/meni_admina.html')
+        return redirect('meni_admina.html')
     else:
         return '''
             <script>
@@ -64,7 +64,7 @@ def loginu():
     if prijava_uporabnika(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('/meni_uporabnika.html')
+        return redirect('meni_uporabnika.html')
     else:
         return '''
             <script>
@@ -156,7 +156,7 @@ def profil_uporabnika():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
     if not username:
-        return redirect('/login_uporabnika.html')
+        return redirect('login_uporabnika.html')
 
     profil_podatki = pridobi_profil(username)
     avtomobili = dobimo_avte()
@@ -215,7 +215,7 @@ def profil_adminaa():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
     if not username:
-        return redirect('/login_admina.html')
+        return redirect('login_admina.html')
 
     profil_podatki = pridobi_profil_admina(username)
 
@@ -318,7 +318,7 @@ def izberi():
     session['dirka'] = dirka # Shrani uporabnika v sejo
     session.save()
 
-    return redirect('/shrani_rezultate.html')
+    return redirect('shrani_rezultate.html')
 
 
 @app.route('/shrani_rezultate.html')
