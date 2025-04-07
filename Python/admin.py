@@ -1,5 +1,6 @@
 import psycopg2
 from Python.dostop import ustvari_povezavo
+import sqlite3
 
 def prijava_admina(username, password):
 

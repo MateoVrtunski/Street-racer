@@ -1,5 +1,6 @@
 from Python.dostop import ustvari_povezavo
 import psycopg2
+import sqlite3
 
 
 db = 'sem2024_mateov'
