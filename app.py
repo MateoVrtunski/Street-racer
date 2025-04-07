@@ -55,7 +55,7 @@ def logina():
         '''
 
 # 🔑 **Prijava uporabnika**
-@app.route('/login_uporabnika', method='POST')
+@app.route('login_uporabnik', method='POST')
 def loginu():
     session = request.environ['beaker.session']
     username = request.forms.get('username').strip()
@@ -64,7 +64,7 @@ def loginu():
     if prijava_uporabnika(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect(request.url_for('/meni_uporabnika.html'))
+        return redirect('/meni_uporabnika.html')
     else:
         return '''
             <script>
