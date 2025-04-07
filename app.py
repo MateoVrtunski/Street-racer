@@ -45,7 +45,7 @@ def logina():
     if prijava_admina(username, password):
         session['username'] = username  # Shrani uporabnika v sejo
         session.save()
-        return redirect('meni_admina')
+        return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/meni_admina.html")
     else:
         return '''
             <script>
