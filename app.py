@@ -314,7 +314,7 @@ def izberi():
     session['dirka'] = dirka 
     session.save()
 
-    return redirect('shrani_rezultate.html')
+    return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/shrani_rezultate.html")
 
 @app.route('/shrani_rezultate.html')
 def prijava_dirka():
