@@ -1,12 +1,8 @@
 from Python.dostop import ustvari_povezavo
 import psycopg2
-import sqlite3
 
 
-db = 'sem2024_mateov'
-host = 'baza.fmf.uni-lj.si'
-user = 'javnost'
-password = 'javnogeslo'
+#Tukaj so vse funkcije potrebne za delovanje aplikacije kot uporabnik
 
 def dobimo_avte():
     """Returns all cars for registration form"""
@@ -20,7 +16,6 @@ def dobimo_avte():
         cur.close()
         conn.close()
 
-    
 def prijava_uporabnika(username, password):
 
     conn, cur = ustvari_povezavo()
@@ -83,8 +78,6 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
         cur.close()
         conn.close()
 
-
-
 def prijavi_na_dirko(uporabnik, id_dirke):
     """Prijavi uporabnika na dirko, če izpolnjuje pogoje."""
     conn, cur = ustvari_povezavo()
@@ -135,8 +128,6 @@ def prijavi_na_dirko(uporabnik, id_dirke):
         cur.close()
         conn.close()
 
-
-
 def pridobi_profil(uporabnik):
     """Vrne podatke o profilu uporabnika."""
     conn, cur = ustvari_povezavo()
@@ -181,7 +172,6 @@ def spremeni_geslo(uporabnik, novo_geslo):
         cur.close()
         conn.close()
 
-
 def spremeni_avto(uporabnik, avto_id):
     """Posodobi avto uporabnika."""
     conn, cur = ustvari_povezavo()
@@ -203,8 +193,6 @@ def spremeni_avto(uporabnik, avto_id):
     finally:
         cur.close()
         conn.close()
-
-
 
 def moje_dirke(uporabnik):
     conn, cur = ustvari_povezavo()

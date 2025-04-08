@@ -9,8 +9,7 @@ app = Bottle()
 SERVER_PORT = int(os.environ.get('BOTTLE_PORT', 8080))
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 
-# Nastavimo pravilno pot do `views` mapo
-
+#to nam omogoča, da aplikacija opredeljuje posameznika
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': True,
@@ -19,23 +18,21 @@ session_opts = {
 }
 TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "views"))
 
-# Serve static files (CSS, JS, images)
+
 @app.route('/static/<filename:path>')
 def serve_static(filename):
     return static_file(filename, root="views/static")
 
-# 🔥 **Pravilno serviranje HTML datotek z template()**
 @app.route('/<filename>.html')
 def serve_template(filename):
     return template(filename, error=None, success=None)
 
-
-# 🏠 **Glavna stran**
+# glavna stran
 @app.route('/')
 def index():
     return template('index')
 
-
+# prijava admina
 @app.route('/login_admina', method='POST')
 def logina():
     session = request.environ['beaker.session']
@@ -43,7 +40,7 @@ def logina():
     password = request.forms.get('password').strip()
     
     if prijava_admina(username, password):
-        session['username'] = username  # Shrani uporabnika v sejo
+        session['username'] = username  
         session.save()
         return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/meni_admina.html")
     else:
@@ -53,8 +50,7 @@ def logina():
                 window.location.href = 'login_admina.html';
             </script>
         '''
-
-# 🔑 **Prijava uporabnika**
+# prijava uporabnika
 @app.route('/login_uporabnika', method='POST')
 def loginu():
     session = request.environ['beaker.session']
@@ -62,7 +58,7 @@ def loginu():
     password = request.forms.get('password').strip()
     
     if prijava_uporabnika(username, password):
-        session['username'] = username  # Shrani uporabnika v sejo
+        session['username'] = username  
         session.save()
         return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/meni_uporabnika.html")
     else:
@@ -72,13 +68,13 @@ def loginu():
                 window.location.href = 'login_uporabnika.html';
             </script>
         '''
-    
+
+# registracija uporabnika 
 @app.route('/register_uporabnika.html')
 def register_page():
-    cars = dobimo_avte()  # Get cars from database
+    cars = dobimo_avte()  
     return template('register_uporabnika', cars=cars, error=None, success=None)
 
-# ✅ **Obdelava registracije**
 @app.route('/register_uporabnika', method="POST")
 def process_register():
     session = request.environ['beaker.session']
@@ -247,7 +243,7 @@ def posodobi_gesloa():
 
 @app.route('/prijava_na_dirko.html')
 def prijava_dirka():
-    trenutne, koncane = prikazi_trenutno_dirko()  # Dobimo podatke
+    trenutne, koncane = prikazi_trenutno_dirko() 
     return template('prijava_na_dirko', trenutne=trenutne, koncane = koncane)
 
 @app.route('/prijava_na_dirko', method="POST")
@@ -270,7 +266,7 @@ def obdelaj_prijavo_dirke():
 def odjava_dirka():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
-    moje = moje_dirke(username)  # Dobimo podatke
+    moje = moje_dirke(username) 
     return template('odjava_na_dirko', moje = moje)
 
 @app.route('/odjava_dirka', method="POST")
@@ -307,7 +303,7 @@ def dodaj():
 
 @app.route('/doloci_rezultate.html')
 def doloci():
-    dirke = mozne_dirke()  # Dobimo podatke
+    dirke = mozne_dirke()  
     return template('doloci_rezultate', dirke=dirke)
 
 @app.route('/izberi_dirko', method="POST")
@@ -315,16 +311,15 @@ def izberi():
     session = request.environ['beaker.session']
     dirka = request.forms.get("dirka")
 
-    session['dirka'] = dirka # Shrani uporabnika v sejo
+    session['dirka'] = dirka 
     session.save()
 
     return redirect('shrani_rezultate.html')
 
-
 @app.route('/shrani_rezultate.html')
 def prijava_dirka():
     session = request.environ['beaker.session']
-    dirke = session.get('dirka')  # Dobimo podatke
+    dirke = session.get('dirka')  
     id_dirke = dirke[0]
     prijavljeni = prijavljeni_na_dirko(id_dirke)
 
@@ -336,7 +331,7 @@ def shrani_rezultate():
     dirke = session.get('dirka')
     id_dirke = dirke[0]
 
-    rezultat_seznam = request.forms.getall("rezultat[]")  # array iz forme
+    rezultat_seznam = request.forms.getall("rezultat[]") 
 
     rezultat = doloci_rezultate(id_dirke, rezultat_seznam)
     
@@ -348,9 +343,7 @@ def shrani_rezultate():
     '''
     
 
-    
 app = SessionMiddleware(app, session_opts)
 
-# 🚀 **Zagon Bottle strežnika**
 
 run(app, host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)

@@ -1,6 +1,7 @@
 import psycopg2
 from Python.dostop import ustvari_povezavo
-import sqlite3
+
+#Tukaj so vse funkcije, ki so potrebne, ko se vpišemo kot admin.
 
 def prijava_admina(username, password):
 
@@ -19,11 +20,11 @@ def prijava_admina(username, password):
 def dodaj_admina(uporabnisko_ime):
     conn, cur = ustvari_povezavo()
     try:
-        # Preverimo, ali uporabnik obstaja
+        
         cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
         uporabnik = cur.fetchone()
 
-        # Preverimo, ali je že admin
+        
         cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
         admin_ze_obstaja = cur.fetchone()
 
@@ -55,7 +56,7 @@ def prikazi_trenutno_dirko():
     conn, cur = ustvari_povezavo()
     
     try:
-        # Poizvedba za vse dirke s številom prijavljenih
+       
         cur.execute("""
             SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) AS prijavljeni
             FROM Dirka d
@@ -65,7 +66,7 @@ def prikazi_trenutno_dirko():
         """)
         vse_dirke = cur.fetchall()
 
-        # Pridobi ID dirk, ki so že končane (vsaj 10 vnosov v RezultatDirke s točkami)
+       
         cur.execute("""
             SELECT id_dirke
             FROM RezultatDirke
@@ -73,7 +74,7 @@ def prikazi_trenutno_dirko():
             GROUP BY id_dirke
             HAVING COUNT(*) >= 10
         """)
-        koncane_dirke_ids = {dirka[0] for dirka in cur.fetchall()}  # Uporabimo množico za hitrejše iskanje
+        koncane_dirke_ids = {dirka[0] for dirka in cur.fetchall()}  
 
         dirke = []
         koncane_dirke = []
@@ -84,8 +85,8 @@ def prikazi_trenutno_dirko():
                 "datum": dirka[1],
                 "vreme": dirka[2],
                 "dirkalisce": dirka[3],
-                "prijavljeni": dirka[4],  # Število prijavljenih
-                "max_prijav": 20  # Omejitev na 20 prijav
+                "prijavljeni": dirka[4],  
+                "max_prijav": 20  
             }
 
             if dirka[0] in koncane_dirke_ids:
@@ -99,12 +100,11 @@ def prikazi_trenutno_dirko():
         cur.close()
         conn.close()
 
-
 def mozne_dirke():
     conn, cur = ustvari_povezavo()
     
     try:
-        # Poizvedba za vse dirke s številom prijavljenih
+        
         cur.execute("""
             SELECT d.id, d.datum, d.vreme, d.ime_dirkalisca, COUNT(td.uporabnisko_ime) AS prijavljeni
             FROM Dirka d
@@ -124,8 +124,8 @@ def mozne_dirke():
                 "datum": dirka[1],
                 "vreme": dirka[2],
                 "dirkalisce": dirka[3],
-                "prijavljeni": dirka[4],  # Število prijavljenih
-                "max_prijav": 20  # Omejitev na 20 prijav
+                "prijavljeni": dirka[4], 
+                "max_prijav": 20  
             }
             dirke.append(dirka_podatki)
             
@@ -138,17 +138,17 @@ def mozne_dirke():
 def prijavljeni_na_dirko(id_dirke):
     conn, cur = ustvari_povezavo()
     try:
-        # Preveri, če dirka obstaja
+        
         cur.execute("SELECT * FROM Dirka WHERE id = %s", (id_dirke,))
         if not cur.fetchone():
             return "⚠️ Neveljaven ID dirke."
 
-        # Preveri, če je že zaključena
+        
         cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s AND tocke > 0", (id_dirke,))
         if cur.fetchone()[0] >= 10:
             return "❌ Ta dirka je že zaključena!"
 
-        # Preveri število prijavljenih
+        
         cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
         prijavljeni = [row[0] for row in cur.fetchall()]
 
@@ -168,21 +168,20 @@ def prijavljeni_na_dirko(id_dirke):
         cur.close()
         conn.close()
 
-
 def doloci_rezultate(id_dirke, rezultat_seznam):
     conn, cur = ustvari_povezavo()
     try:
-        # Preveri, če dirka obstaja
+        
         cur.execute("SELECT * FROM Dirka WHERE id = %s", (id_dirke,))
         if not cur.fetchone():
             return "⚠️ Neveljaven ID dirke."
 
-        # Preveri, če je že zaključena
+        
         cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s AND tocke > 0", (id_dirke,))
         if cur.fetchone()[0] >= 10:
             return "❌ Ta dirka je že zaključena!"
 
-        # Preveri število prijavljenih
+        
         cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
         prijavljeni = [row[0] for row in cur.fetchall()]
 
@@ -193,7 +192,7 @@ def doloci_rezultate(id_dirke, rezultat_seznam):
         
         cur.execute("SELECT uporabnisko_ime FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
         prijavljeni = [row[0] for row in cur.fetchall()]
-        # F1 točke
+       
         tocke_f1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] + [0] * (len(prijavljeni) - 10)
 
         for i, uporabnik in enumerate(rezultat_seznam):
@@ -219,12 +218,11 @@ def doloci_rezultate(id_dirke, rezultat_seznam):
         cur.close()
         conn.close()
 
-
 def pridobi_profil_admina(uporabnik):
     """Vrne podatke o profilu uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
-        # Pridobimo osnovne podatke uporabnika
+        
         cur.execute("SELECT ime, priimek FROM Boss WHERE uporabnisko_ime = %s", (uporabnik,))
         rezultat = cur.fetchone()
 
@@ -236,7 +234,7 @@ def pridobi_profil_admina(uporabnik):
                 "priimek": priimek
             }
         else:
-            return None  # Če uporabnik ne obstaja
+            return None  
 
     finally:
         cur.close()
@@ -260,7 +258,7 @@ def pridobi_rezultate_dirk():
     """Vrne seznam preteklih dirk z rezultati."""
     conn, cur = ustvari_povezavo()
     try:
-        # Pridobimo seznam vseh dirk, ki imajo rezultate
+        
         cur.execute("""
             SELECT DISTINCT d.id, d.datum, d.ime_dirkalisca
             FROM Dirka d
@@ -273,7 +271,7 @@ def pridobi_rezultate_dirk():
         for dirka in dirke:
             id_dirke, datum, ime_dirkalisca = dirka
 
-            # Pridobimo rezultate za vsako dirko
+            
             cur.execute("""
                 SELECT r.uvrstitev, r.uporabnisko_ime, r.tocke
                 FROM RezultatDirke r
@@ -297,7 +295,6 @@ def pridobi_rezultate_dirk():
     finally:
         cur.close()
         conn.close()
-
 
 def poglej_championship():
     """Vrne trenutno stanje championshipa kot seznam slovarjev."""

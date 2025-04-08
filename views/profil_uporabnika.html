@@ -10,7 +10,7 @@
     <div class="container">
         <h1>Tvoj profil</h1>
     
-        <!-- PROFIL INFO -->
+        
         <table>
             <tr>
                 <th>Ime</th>
@@ -30,7 +30,7 @@
             </tr>
         </table>
     
-        <!-- AKTIVNE DIRKE -->
+        
         <h2>📅 Trenutne prijave na dirko</h2>
     
         % if moje:
@@ -56,14 +56,14 @@
             <p>⚠️ Niste prijavljeni na nobeno dirko.</p>
         % end
     
-        <!-- GESLO -->
+       
         <h2>🔒 Spremeni geslo</h2>
         <form action="spremeni_geslo_uporabnika" method="POST">
             <input type="password" name="novo_geslo" placeholder="Novo geslo" required>
             <button type="submit">Spremeni geslo</button>
         </form>
     
-        <!-- AVTO -->
+        
         <h2>Zamenjaj avto</h2>
         <form action="spremeni_avto" method="POST">
             <select name="avto">
@@ -76,7 +76,7 @@
             <button type="submit">Zamenjaj avto</button>
         </form>
     
-        <!-- NAZAJ -->
+       
         <a href="meni_uporabnika.html">
             <button class="gray-btn">Nazaj</button>
         </a>
