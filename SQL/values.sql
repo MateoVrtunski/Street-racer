@@ -149,3 +149,46 @@ INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUE
 (2, 'oscpiasti', 17, 'Veyron 16.4');
 
 select * from rezultatdirke;
+
+
+
+
+INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUES
+(4, 'lewishamilton', 4, 'AMG GT Black Series'),
+(4, 'sebvettel', 15, '918 Spyder'),
+(4, 'charlesleclerc', 12, 'LaFerrari'),
+(4, 'sergioperez', 6, 'Aventador SVJ'),
+(4, 'georgerussell', 14, 'SLS AMG'),
+(4, 'lando_norris', 18, '720S'),
+(4, 'carlossainz', 5, '911 Turbo S'),
+(4, 'valtteribottas', 3, 'M5 Competition'),
+(4, 'danielricciardo', 16, 'Huracán Evo'),
+(4, 'mickschumacher', 13, 'i8'),
+(4, 'kevinmagnussen', 1, 'DBS Superleggera'),
+(4, 'pierregasly', 7, 'Chiron Super Sport 300+'),
+(4, 'estebanocon', 11, 'Vantage AMR'),
+(4, 'yukitsunoda', 8, 'Speedtail'),
+(4, 'alexalbon', 19, 'Zonda Cinque'),
+(4, 'zhouguanyu', 9, 'Huayra Roadster BC'),
+(4, 'nicoschumacher', 10, 'Jesko Absolut'),
+(4, 'oscpiasti', 17, 'Veyron 16.4'),
+(4, 'felipemassa', 20, 'Agera RS'),
+(5, 'felipemassa', 20, 'Agera RS'),
+(5, 'lewishamilton', 4, 'AMG GT Black Series'),
+(5, 'sebvettel', 15, '918 Spyder'),
+(5, 'charlesleclerc', 12, 'LaFerrari'),
+(5, 'sergioperez', 6, 'Aventador SVJ'),
+(5, 'georgerussell', 14, 'SLS AMG'),
+(5, 'lando_norris', 18, '720S'),
+(5, 'carlossainz', 5, '911 Turbo S'),
+(5, 'valtteribottas', 3, 'M5 Competition'),
+(5, 'danielricciardo', 16, 'Huracán Evo'),
+(5, 'mickschumacher', 13, 'i8'),
+(5, 'kevinmagnussen', 1, 'DBS Superleggera'),
+(5, 'pierregasly', 7, 'Chiron Super Sport 300+'),
+(5, 'estebanocon', 11, 'Vantage AMR'),
+(5, 'yukitsunoda', 8, 'Speedtail'),
+(5, 'alexalbon', 19, 'Zonda Cinque'),
+(5, 'zhouguanyu', 9, 'Huayra Roadster BC'),
+(5, 'nicoschumacher', 10, 'Jesko Absolut'),
+(5, 'oscpiasti', 17, 'Veyron 16.4');
