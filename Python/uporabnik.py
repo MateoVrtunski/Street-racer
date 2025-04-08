@@ -38,17 +38,17 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
     conn, cur = ustvari_povezavo()
     
     try:
-        # Check if username exists
+        
         cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (username,))
         if cur.fetchone():
             return 1
         
-        # Check if car exists
+        
         cur.execute("SELECT * FROM Avto WHERE id = %s", (avto_id,))
         if not cur.fetchone():
             return 3
         
-        # Get next ID
+       
         cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
         new_id = cur.fetchone()[0]
 
@@ -61,13 +61,13 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
             
         model_avta = result[0]
         
-        # Insert new user
+        
         cur.execute("""
             INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, model_avta, tocke)
             VALUES (%s, %s, %s, %s, %s, %s, %s, 0)
         """, (new_id, username, ime, priimek, password, avto_id, model_avta))
         
-        conn.commit()  # THIS WAS MISSING - CRUCIAL!
+        conn.commit() 
         return 2
         
     except Exception as e:
@@ -82,12 +82,14 @@ def prijavi_na_dirko(uporabnik, id_dirke):
     """Prijavi uporabnika na dirko, če izpolnjuje pogoje."""
     conn, cur = ustvari_povezavo()
     try:
-        # Preveri, ali je dirka že zaključena
+        if id_dirke == None:
+            return "Izberite dirko!"
+        
         cur.execute("SELECT COUNT(*) FROM RezultatDirke WHERE id_dirke = %s", (id_dirke,))
         if cur.fetchone()[0] > 0:
             return "❌ Ta dirka je že zaključena! Ne moreš se več prijaviti."
 
-        # Preveri, ali je uporabnik že prijavljen
+        
         cur.execute("""
             SELECT COUNT(*) FROM TrenutnaDirka 
             WHERE id_dirke = %s AND uporabnisko_ime = %s
@@ -95,12 +97,12 @@ def prijavi_na_dirko(uporabnik, id_dirke):
         if cur.fetchone()[0] > 0:
             return "ℹ️ Na to dirko si že prijavljen! Ni potrebno ponovno prijaviti."
 
-        # Preveri, ali je dirka polna
+        
         cur.execute("SELECT COUNT(*) FROM TrenutnaDirka WHERE id_dirke = %s", (id_dirke,))
         if cur.fetchone()[0] >= 20:
             return "❌ Dirka je polna! Poskusi izbrati drugo dirko."
 
-        # Preveri, ali ima uporabnik izbran avto
+        
         cur.execute("SELECT id_avto FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
         avto_podatki = cur.fetchone()
         if not avto_podatki or avto_podatki[0] is None:
@@ -108,12 +110,12 @@ def prijavi_na_dirko(uporabnik, id_dirke):
 
         id_avto = avto_podatki[0]
 
-        # Pridobi model avta
+        
         cur.execute("SELECT model FROM Avto WHERE id = %s", (id_avto,))
         avto_model_podatki = cur.fetchone()
         avto_model = avto_model_podatki[0] if avto_model_podatki else "Neznan model"
 
-        # Vstavi prijavo v TrenutnaDirka
+        
         cur.execute("""
             INSERT INTO TrenutnaDirka (id_dirke, uporabnisko_ime, id_avto, model_avta)
             VALUES (%s, %s, %s, %s)
@@ -132,14 +134,14 @@ def pridobi_profil(uporabnik):
     """Vrne podatke o profilu uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
-        # Pridobimo osnovne podatke uporabnika
+       
         cur.execute("SELECT ime, priimek, tocke, id_avto FROM Uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
         rezultat = cur.fetchone()
 
         if rezultat:
             ime, priimek, tocke, id_avto = rezultat
 
-            # Pridobimo podatke o avtomobilu
+            
             cur.execute("SELECT znamka, model FROM Avto WHERE id = %s", (id_avto,))
             avto_podatki = cur.fetchone()
             avto_ime = f"{avto_podatki[0]} {avto_podatki[1]}" if avto_podatki else "Ni izbran"
@@ -152,7 +154,7 @@ def pridobi_profil(uporabnik):
                 "avto": avto_ime
             }
         else:
-            return None  # Če uporabnik ne obstaja
+            return None  
 
     finally:
         cur.close()
@@ -229,6 +231,9 @@ def moje_dirke(uporabnik):
 def odjava_dirke(uporabnik, id_dirke):
     conn, cur = ustvari_povezavo()
     try:
+        if id_dirke == None:
+            return "Izberite dirko!"
+
         cur.execute("""
             SELECT d.id, d.ime_dirkalisca, d.datum, d.vreme
             FROM Dirka d
