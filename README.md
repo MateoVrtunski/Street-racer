@@ -13,7 +13,7 @@ Za prijavo kot administrator uporabite uporabniško ime: admin in geslo: geslo.
 
 Aplikacijo lahko zaženete preko Binderja: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MateoVrtunski/Street-racer/main?urlpath=proxy%2F8080).
 
-Spodaj se nahaja tudi ER diagram podatkovne baze, ki prikazuje povezave med entitetami in njihovo strukturo.
+Spodaj se nahaja tudi ER diagram podatkovne baze, ki prikazuje povezave med entitetami in njihovo strukturo. (To je prvotni ER diagram in ni ČISTO tak kot je aplikacija).
 
 ![alt text](https://github.com/MateoVrtunski/Street-racer/blob/main/Street_racer.drawio.png?raw=true)
  
