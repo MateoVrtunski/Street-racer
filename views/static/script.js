@@ -3,20 +3,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll(".klikabilna-vrstica").forEach(function (row) {
         row.addEventListener("click", function () {
-            // Počisti prejšnjo izbiro
+           
             if (izbranaVrstica) {
                 izbranaVrstica.classList.remove("izbrana");
             }
 
-            // Označi novo izbrano vrstico
+            
             this.classList.add("izbrana");
             izbranaVrstica = this;
 
-            // Shrani ID izbrane dirke
+            
             let dirkaId = this.getAttribute("data-id");
             document.getElementById("izbrana_dirka").value = dirkaId;
 
-            // Omogoči gumb za potrditev
+            
             document.getElementById("potrdiPrijavo").disabled = false;
         });
     });
@@ -28,6 +28,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    let izbranaVrstica = null;
+    const potrdiBtn = document.getElementById("potrdiOdjavo");
+
+    document.querySelectorAll(".klikabilna-vrstica").forEach(function (row) {
+        row.addEventListener("click", function () {
+            if (izbranaVrstica) {
+                izbranaVrstica.classList.remove("izbrana");
+            }
+
+            this.classList.add("izbrana");
+            izbranaVrstica = this;
+
+            document.getElementById("izbrana_dirka").value = this.getAttribute("data-id");
+
+            potrdiBtn.disabled = false;
+            potrdiBtn.style.filter = "none";
+            potrdiBtn.style.opacity = "1";
+        });
+    });
+});
+
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const seznam = document.getElementById("tekmovalci");
@@ -68,11 +93,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    // 🔁 Ob oddaji forme ustvarimo hidden inpute v pravilnem vrstnem redu
+    
     const form = document.getElementById("rezultat-form");
     form.addEventListener("submit", function (e) {
         const container = document.getElementById("skriti-vnosi");
-        container.innerHTML = ""; // počisti staro
+        container.innerHTML = ""; 
 
         const items = seznam.querySelectorAll(".drag-item");
         items.forEach((item) => {
