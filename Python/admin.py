@@ -168,12 +168,12 @@ def prijavljeni_na_dirko(id_dirke):
         cur.close()
         conn.close()
 
-def doloci_rezultate(id_dirke, rezultat_seznam):
+def doloci_rezultate(rezultat_seznam, id_dirke=None):
     conn, cur = ustvari_povezavo()
     try:
         if id_dirke == None:
             return "Izberite dirko!"
-        
+            
         cur.execute("SELECT * FROM Dirka WHERE id = %s", (id_dirke,))
         if not cur.fetchone():
             return "⚠️ Neveljaven ID dirke."

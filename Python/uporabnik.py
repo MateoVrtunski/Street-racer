@@ -78,7 +78,7 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
         cur.close()
         conn.close()
 
-def prijavi_na_dirko(uporabnik, id_dirke):
+def prijavi_na_dirko(uporabnik, id_dirke=None):
     """Prijavi uporabnika na dirko, če izpolnjuje pogoje."""
     conn, cur = ustvari_povezavo()
     try:
@@ -228,7 +228,7 @@ def moje_dirke(uporabnik):
         cur.close()
         conn.close()
 
-def odjava_dirke(uporabnik, id_dirke):
+def odjava_dirke(uporabnik, id_dirke=None):
     conn, cur = ustvari_povezavo()
     try:
         if id_dirke == None:
