@@ -1,6 +1,6 @@
 from Python.dostop import ustvari_povezavo
 import psycopg2
-
+import bcrypt
 
 #Tukaj so vse funkcije potrebne za delovanje aplikacije kot uporabnik
 
@@ -17,63 +17,67 @@ def dobimo_avte():
         conn.close()
 
 def prijava_uporabnika(username, password):
-
     conn, cur = ustvari_povezavo()
     try:
-        cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s AND geslo = %s", 
-                   (username, password))
-        return cur.fetchone() is not None
-    except psycopg2.Error as e:
+        cur.execute("SELECT geslo FROM Uporabnik WHERE uporabnisko_ime = %s", (username,))
+        row = cur.fetchone()
+        if not row:
+            return False
+
+        hashed_password = row[0] 
+
+        geslo_bytes = password.encode('utf-8')
+        return bcrypt.checkpw(geslo_bytes, hashed_password.encode('utf-8'))
+
+    except Exception as e:
         print(f"Database error: {e}")
         return False
     finally:
         cur.close()
         conn.close()
 
+
 def registracija_uporabnika(username=None, ime=None, priimek=None, password=None, avto_id=None):
     """
     - Če so podani podatki, registrira novega uporabnika.
-    - Vedno vrne seznam avtomobilov za izbiro.
+    - Vedno vrne kodo statusa (1 = uporabnik že obstaja, 2 = uspeh, 3 = napaka).
     """
     conn, cur = ustvari_povezavo()
     
     try:
-        
         cur.execute("SELECT * FROM Uporabnik WHERE uporabnisko_ime = %s", (username,))
         if cur.fetchone():
-            return 1
-        
+            return 1  
         
         cur.execute("SELECT * FROM Avto WHERE id = %s", (avto_id,))
         if not cur.fetchone():
-            return 3
-        
+            return 3 
        
         cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
         new_id = cur.fetchone()[0]
 
         cur.execute("SELECT model FROM Avto WHERE id = %s", (avto_id,))
         result = cur.fetchone()
-        
         if not result:
             print(f"Napaka: Avto z ID {avto_id} ne obstaja")
             return False
-            
         model_avta = result[0]
-        
-        
+
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_str = hashed.decode('utf-8')  
+
         cur.execute("""
             INSERT INTO Uporabnik (id, uporabnisko_ime, ime, priimek, geslo, id_avto, model_avta, tocke)
             VALUES (%s, %s, %s, %s, %s, %s, %s, 0)
-        """, (new_id, username, ime, priimek, password, avto_id, model_avta))
-        
-        conn.commit() 
-        return 2
-        
+        """, (new_id, username, ime, priimek, hashed_str, avto_id, model_avta))
+
+        conn.commit()
+        return 2 
+
     except Exception as e:
         conn.rollback()
         print(f"Database error: {e}")
-        return 3
+        return 3  
     finally:
         cur.close()
         conn.close()

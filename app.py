@@ -28,10 +28,8 @@ def safe_redirect(path):
     jupyter_prefix = request.environ.get('JUPYTERHUB_SERVICE_PREFIX')
 
     if jupyter_prefix:
-        # We're on Binder (JupyterHub), use the proxy path
         return redirect(f"{jupyter_prefix}proxy/8080/{path}")
     else:
-        # Local environment
         return redirect(f"{path}")
     
 @app.route('/static/<filename:path>')
@@ -48,10 +46,8 @@ def index():
     jupyter_prefix = request.environ.get('JUPYTERHUB_SERVICE_PREFIX')
 
     if jupyter_prefix:
-        # We're on Binder (JupyterHub), use the proxy path
         return template('index')
     else:
-        # Local environment
         return template('index2')
 
 # prijava admina

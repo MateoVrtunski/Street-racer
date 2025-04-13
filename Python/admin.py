@@ -1,5 +1,6 @@
 import psycopg2
 from Python.dostop import ustvari_povezavo
+import bcrypt
 
 #Tukaj so vse funkcije, ki so potrebne, ko se vpišemo kot admin.
 
@@ -7,15 +8,23 @@ def prijava_admina(username, password):
 
     conn, cur = ustvari_povezavo()
     try:
-        cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s AND geslo = %s", 
-                   (username, password))
-        return cur.fetchone() is not None
+        cur.execute("SELECT geslo FROM Boss WHERE uporabnisko_ime = %s", (username,))
+        row = cur.fetchone()
+        if not row:
+            return False
+
+        hashed_password = row[0] 
+
+        geslo_bytes = password.encode('utf-8')
+        return bcrypt.checkpw(geslo_bytes, hashed_password.encode('utf-8'))
+
     except psycopg2.Error as e:
         print(f"Database error: {e}")
         return False
     finally:
         cur.close()
         conn.close()
+
 
 def dodaj_admina(uporabnisko_ime):
     conn, cur = ustvari_povezavo()
