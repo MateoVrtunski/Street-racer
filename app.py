@@ -1,8 +1,9 @@
-from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template
+from bottle import Bottle, run, static_file, request, redirect, TEMPLATE_PATH, template, url
 import os
 from Python.uporabnik import prijava_uporabnika, registracija_uporabnika, dobimo_avte, spremeni_avto, spremeni_geslo, pridobi_profil, prijavi_na_dirko, moje_dirke, odjava_dirke, kdojekdo
 from beaker.middleware import SessionMiddleware
 from Python.admin import poglej_championship, pridobi_rezultate_dirk, prijava_admina, prikazi_trenutno_dirko, pridobi_profil_admina, spremeni_geslo_admina, dodaj_admina, mozne_dirke, doloci_rezultate, prijavljeni_na_dirko
+from functools import wraps
 
 app = Bottle()
 
@@ -18,7 +19,21 @@ session_opts = {
 }
 TEMPLATE_PATH.insert(0, os.path.join(os.getcwd(), "views"))
 
+from bottle import request, redirect
 
+def safe_redirect(path):
+    """
+    Return a correct redirect path depending on the environment (local or Binder/JupyterHub).
+    """
+    jupyter_prefix = request.environ.get('JUPYTERHUB_SERVICE_PREFIX')
+
+    if jupyter_prefix:
+        # We're on Binder (JupyterHub), use the proxy path
+        return redirect(f"{jupyter_prefix}proxy/8080/{path}")
+    else:
+        # Local environment
+        return redirect(f"{path}")
+    
 @app.route('/static/<filename:path>')
 def serve_static(filename):
     return static_file(filename, root="views/static")
@@ -30,7 +45,14 @@ def serve_template(filename):
 # glavna stran
 @app.route('/')
 def index():
-    return template('index')
+    jupyter_prefix = request.environ.get('JUPYTERHUB_SERVICE_PREFIX')
+
+    if jupyter_prefix:
+        # We're on Binder (JupyterHub), use the proxy path
+        return template('index')
+    else:
+        # Local environment
+        return template('index2')
 
 # prijava admina
 @app.route('/login_admina', method='POST')
@@ -42,7 +64,7 @@ def logina():
     if prijava_admina(username, password):
         session['username'] = username  
         session.save()
-        return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/meni_admina.html")
+        return safe_redirect('meni_admina.html')
     else:
         return '''
             <script>
@@ -60,7 +82,7 @@ def loginu():
     if prijava_uporabnika(username, password):
         session['username'] = username  
         session.save()
-        return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/meni_uporabnika.html")
+        return safe_redirect("meni_uporabnika.html")
     else:
         return '''
             <script>
@@ -152,7 +174,7 @@ def profil_uporabnika():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
     if not username:
-        return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/login_uporabnika.html")
+        return safe_redirect("login_uporabnika.html")
 
     profil_podatki = pridobi_profil(username)
     avtomobili = dobimo_avte()
@@ -211,7 +233,7 @@ def profil_adminaa():
     session = request.environ['beaker.session']
     username = session.get('username', 'Uporabnik')
     if not username:
-        return redirect('login_admina.html')
+        return safe_redirect('login_admina.html')
 
     profil_podatki = pridobi_profil_admina(username)
 
@@ -314,7 +336,7 @@ def izberi():
     session['dirka'] = dirka 
     session.save()
 
-    return redirect(f"{request.environ['JUPYTERHUB_SERVICE_PREFIX']}proxy/8080/shrani_rezultate.html")
+    return safe_redirect("shrani_rezultate.html")
 
 @app.route('/shrani_rezultate.html')
 def prijava_dirka():
