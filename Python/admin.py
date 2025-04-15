@@ -37,7 +37,7 @@ def dodaj_admina(uporabnisko_ime):
         cur.execute("SELECT * FROM Boss WHERE uporabnisko_ime = %s", (uporabnisko_ime,))
         admin_ze_obstaja = cur.fetchone()
 
-        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Uporabnik")
+        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM Boss")
         nov_id = cur.fetchone()[0]
 
         if not uporabnik:
