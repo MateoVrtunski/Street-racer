@@ -230,7 +230,6 @@ def doloci_rezultate(rezultat_seznam, id_dirke=None):
         conn.close()
 
 def pridobi_profil_admina(uporabnik):
-    """Vrne podatke o profilu uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
         
@@ -252,7 +251,6 @@ def pridobi_profil_admina(uporabnik):
         conn.close()
 
 def spremeni_geslo_admina(uporabnik, novo_geslo):
-    """Posodobi geslo uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
         hashed = bcrypt.hashpw(novo_geslo.encode('utf-8'), bcrypt.gensalt())
@@ -268,7 +266,6 @@ def spremeni_geslo_admina(uporabnik, novo_geslo):
         conn.close()
         
 def pridobi_rezultate_dirk():
-    """Vrne seznam preteklih dirk z rezultati."""
     conn, cur = ustvari_povezavo()
     try:
         
@@ -310,7 +307,6 @@ def pridobi_rezultate_dirk():
         conn.close()
 
 def poglej_championship():
-    """Vrne trenutno stanje championshipa kot seznam slovarjev."""
     conn, cur = ustvari_povezavo()
     try:
         cur.execute("SELECT ime, priimek, tocke FROM Uporabnik ORDER BY tocke DESC")

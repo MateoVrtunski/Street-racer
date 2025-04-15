@@ -5,7 +5,6 @@ import bcrypt
 #Tukaj so vse funkcije potrebne za delovanje aplikacije kot uporabnik
 
 def dobimo_avte():
-    """Returns all cars for registration form"""
     conn, cur = ustvari_povezavo()
     try:
         cur.execute("SELECT id, znamka, model, moc, max_hitrost FROM Avto ORDER BY id")
@@ -38,10 +37,7 @@ def prijava_uporabnika(username, password):
 
 
 def registracija_uporabnika(username=None, ime=None, priimek=None, password=None, avto_id=None):
-    """
-    - Če so podani podatki, registrira novega uporabnika.
-    - Vedno vrne kodo statusa (1 = uporabnik že obstaja, 2 = uspeh, 3 = napaka).
-    """
+    
     conn, cur = ustvari_povezavo()
     
     try:
@@ -83,7 +79,7 @@ def registracija_uporabnika(username=None, ime=None, priimek=None, password=None
         conn.close()
 
 def prijavi_na_dirko(uporabnik, id_dirke=None):
-    """Prijavi uporabnika na dirko, če izpolnjuje pogoje."""
+
     conn, cur = ustvari_povezavo()
     try:
         if id_dirke == None:
@@ -135,7 +131,6 @@ def prijavi_na_dirko(uporabnik, id_dirke=None):
         conn.close()
 
 def pridobi_profil(uporabnik):
-    """Vrne podatke o profilu uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
        
@@ -165,7 +160,7 @@ def pridobi_profil(uporabnik):
         conn.close()
 
 def spremeni_geslo(uporabnik, novo_geslo):
-    """Posodobi geslo uporabnika."""
+
     conn, cur = ustvari_povezavo()
     try:
         hashed = bcrypt.hashpw(novo_geslo.encode('utf-8'), bcrypt.gensalt())
@@ -181,7 +176,7 @@ def spremeni_geslo(uporabnik, novo_geslo):
         conn.close()
 
 def spremeni_avto(uporabnik, avto_id):
-    """Posodobi avto uporabnika."""
+
     conn, cur = ustvari_povezavo()
     try:
         cur.execute("SELECT model FROM Avto WHERE id = %s", (avto_id,))
