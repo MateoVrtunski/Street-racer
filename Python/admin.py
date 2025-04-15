@@ -255,7 +255,9 @@ def spremeni_geslo_admina(uporabnik, novo_geslo):
     """Posodobi geslo uporabnika."""
     conn, cur = ustvari_povezavo()
     try:
-        cur.execute("UPDATE Boss SET geslo = %s WHERE uporabnisko_ime = %s", (novo_geslo, uporabnik))
+        hashed = bcrypt.hashpw(novo_geslo.encode('utf-8'), bcrypt.gensalt())
+        hashed_str = hashed.decode('utf-8')
+        cur.execute("UPDATE Boss SET geslo = %s WHERE uporabnisko_ime = %s", (hashed_str, uporabnik))
         conn.commit()
         return True
     except Exception as e:
