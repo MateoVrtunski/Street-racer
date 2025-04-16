@@ -18,7 +18,7 @@ Spodaj se nahaja tudi ER diagram podatkovne baze, ki prikazuje povezave med enti
 ![alt text](https://github.com/MateoVrtunski/Street-racer/blob/main/Street_racer.drawio.png?raw=true)
  
 Še nekaj splošnih pravil: maksimalno število ljudi za eno dirko je 20, dve osebi nemoreta imeti enako uporabniško ime, nemoremo vpisati rezultatov, če ni vsaj 10 prijavljenih.
-Ko dodamo osebo za admin, je ta zbrisana iz uporabnikov (geslo ima še vedno isto).
+Ko dodamo osebo za admin, je ta zbrisana iz uporabnikov (geslo ima še vedno isto), za admina lahko izberemo samo osebo, ki ni prijavljena na nobeno dirko.
 
 Srečno pot!
 
