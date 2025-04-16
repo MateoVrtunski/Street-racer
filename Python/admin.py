@@ -177,7 +177,7 @@ def prijavljeni_na_dirko(id_dirke):
         cur.close()
         conn.close()
 
-def doloci_rezultate(rezultat_seznam, id_dirke=None):
+def doloci_rezultate( id_dirke ,rezultat_seznam):
     conn, cur = ustvari_povezavo()
     try:
         if id_dirke == None:
@@ -223,7 +223,7 @@ def doloci_rezultate(rezultat_seznam, id_dirke=None):
         return "✅ Rezultati uspešno shranjeni!"
     
     except Exception as e:
-        print(f"Napaka pri spreminjanju gesla: {e}")
+        print(f"{e}")
         return False
     finally:
         cur.close()
