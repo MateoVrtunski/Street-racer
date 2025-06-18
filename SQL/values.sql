@@ -195,6 +195,9 @@ INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUE
 
 
 
+select * from rezultatdirke;
+
+
 INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUES
 (7, 'felipemassa', 20, 'Agera RS'),
 (7, 'alexalbon', 19, 'Zonda Cinque'),
@@ -229,6 +232,6 @@ INSERT INTO trenutnadirka (id_dirke, uporabnisko_ime, id_avto, model_avta) VALUE
 (8, 'lewishamilton', 4, 'AMG GT Black Series'),
 (8, 'alexalbon', 19, 'Zonda Cinque'),
 (8, 'sergioperez', 6, 'Aventador SVJ'),
-(8, 'kevinmagnussen', 1, 'DBS Superleggera'),
 (8, 'estebanocon', 11, 'Vantage AMR'),
-(8, 'zhouguanyu', 9, 'Huayra Roadster BC'),
+(8, 'kevinmagnussen', 1, 'DBS Superleggera'),
+(8, 'zhouguanyu', 9, 'Huayra Roadster BC');
